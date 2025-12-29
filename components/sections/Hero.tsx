@@ -50,7 +50,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-0 pointer-events-none">
         <video 
           autoPlay muted loop playsInline 
-          className="w-full h-full object-cover opacity-30"
+          className="w-full h-full object-cover opacity-50"
         >
           <source src="/hero-bg.mp4" type="video/mp4" />
         </video>
