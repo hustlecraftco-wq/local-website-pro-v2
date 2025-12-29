@@ -3,18 +3,25 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { Zap, ArrowRight, Clock } from "lucide-react";
+import { Zap, ArrowRight, Clock, Laptop } from "lucide-react"; // Added Laptop for Demos icon if needed
 
 export default function Hero() {
   const [speedTestActive, setSpeedTestActive] = useState(false);
   const [speedTestDone, setSpeedTestDone] = useState(false);
   
-  // Animation Logic
+  // --- ANIMATION LOGIC ---
+  
+  // 1. Competitor Animation (Slow)
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => latest.toFixed(1));
   const competitorTextRef = useRef<HTMLParagraphElement>(null);
 
-  // Sync animation to text (Fixes the React Crash)
+  // 2. Asset Animation (Fast) - NEW
+  const assetCount = useMotionValue(0);
+  const assetRounded = useTransform(assetCount, (latest) => latest.toFixed(1));
+  const assetTextRef = useRef<HTMLParagraphElement>(null);
+
+  // Sync Competitor Text
   useEffect(() => {
     const unsubscribe = rounded.on("change", (latest) => {
       if (competitorTextRef.current) {
@@ -24,24 +31,46 @@ export default function Hero() {
     return () => unsubscribe();
   }, [rounded]);
 
+  // Sync Asset Text - NEW
+  useEffect(() => {
+    const unsubscribe = assetRounded.on("change", (latest) => {
+      if (assetTextRef.current) {
+        assetTextRef.current.textContent = latest + "s";
+      }
+    });
+    return () => unsubscribe();
+  }, [assetRounded]);
+
   const runSpeedTest = () => {
     if (speedTestActive) return;
     setSpeedTestActive(true);
     setSpeedTestDone(false);
-    count.set(0);
     
+    // Reset values
+    count.set(0);
+    assetCount.set(0);
+    
+    // Animate Competitor (Slow: 3.2s over 2.5 seconds)
     animate(count, 3.2, { 
       duration: 2.5, 
-      ease: "circOut",
+      ease: "linear",
       onComplete: () => setSpeedTestDone(true)
+    });
+
+    // Animate Asset (Fast: 0.4s over 0.4 seconds) - NEW
+    animate(assetCount, 0.4, {
+      duration: 0.4,
+      ease: "circOut"
     });
   };
 
   const resetSpeedTest = () => {
     count.set(0);
+    assetCount.set(0);
     setSpeedTestActive(false);
     setSpeedTestDone(false);
     if (competitorTextRef.current) competitorTextRef.current.textContent = "0.0s";
+    if (assetTextRef.current) assetTextRef.current.textContent = "0.0s";
   };
 
   return (
@@ -50,11 +79,11 @@ export default function Hero() {
       <div className="absolute inset-0 z-0 pointer-events-none">
         <video 
           autoPlay muted loop playsInline 
-          className="w-full h-full object-cover opacity-70"
+          className="w-full h-full object-cover opacity-70" // Adjusted opacity for readability
         >
           <source src="/hero-bg.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-kc-dark via-kc-dark/80 to-blue-900/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-kc-dark via-kc-dark/60 to-blue-900/10" />
       </div>
 
       {/* Content */}
@@ -96,19 +125,22 @@ export default function Hero() {
           <span className="text-white font-semibold"> 0.4s Load Time. No Monthly Fees. 100% Ownership.</span>
         </motion.p>
 
+        {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-5 justify-center mb-20">
-          <Link href="#pricing" className="group relative px-8 py-4 bg-kc-accent rounded-full text-white font-bold text-lg shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2">
+          <Link href="/contact" className="group relative px-8 py-4 bg-kc-accent rounded-full text-white font-bold text-lg shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2">
             <span>Build My Asset</span>
             <ArrowRight className="w-5 h-5"/>
           </Link>
-          <Link href="#compare" className="px-8 py-4 glass-panel rounded-full text-white font-bold text-lg hover:bg-white/5 transition-all flex items-center justify-center gap-2">
-            <Clock className="w-5 h-5 text-kc-success"/>
-            <span>Agency vs LocalWebsitePro</span>
+          
+          {/* Swapped to "Demos" based on your strategy pivot */}
+          <Link href="#demos" className="px-8 py-4 glass-panel rounded-full text-white font-bold text-lg hover:bg-white/5 transition-all flex items-center justify-center gap-2 group">
+            <Laptop className="w-5 h-5 text-kc-muted group-hover:text-white transition-colors"/>
+            <span>See Live Demos</span>
           </Link>
         </div>
 
-        {/* Speed Test */}
-        <div className="max-w-xl mx-auto min-h-[200px]">
+        {/* Speed Test Widget */}
+        <div className="max-w-xl mx-auto min-h-[220px]">
           {!speedTestActive ? (
             <button onClick={runSpeedTest} className="group w-full md:w-auto glass-panel px-8 py-6 rounded-2xl flex items-center justify-center gap-4 mx-auto hover:border-kc-success/50 transition-all cursor-pointer">
               <div className="p-3 bg-kc-success/10 rounded-full text-kc-success">
@@ -122,22 +154,35 @@ export default function Hero() {
           ) : (
             <div className="glass-panel p-8 rounded-3xl border-kc-success/30 relative overflow-hidden">
               <div className="flex justify-between items-center relative z-10">
+                {/* Competitor Side */}
                 <div className="text-center w-1/2">
                   <p className="text-[10px] uppercase tracking-widest text-kc-accent font-bold mb-2">Wordpress</p>
                   <p ref={competitorTextRef} className="text-5xl font-mono font-black text-white">0.0s</p>
                   <p className="text-xs text-kc-muted mt-2">Loading...</p>
                 </div>
+
                 <div className="h-12 w-px bg-white/10 mx-4"></div>
+
+                {/* Asset Side */}
                 <div className="text-center w-1/2">
                   <p className="text-[10px] uppercase tracking-widest text-kc-success font-bold mb-2">Your Asset</p>
-                  <p className="text-5xl font-mono font-black text-kc-success">0.4s</p>
+                  <p ref={assetTextRef} className="text-5xl font-mono font-black text-kc-success">0.0s</p>
                   <p className="text-xs text-kc-success/70 mt-2">Instant.</p>
                 </div>
               </div>
+
+              {/* Result Message with Stat */}
               {speedTestDone && (
-                <div className="mt-6 pt-4 border-t border-white/5 text-center">
-                  <p className="text-white font-bold mb-2">In that 2.8s gap, your customer left.</p>
-                  <button onClick={resetSpeedTest} className="text-xs text-kc-muted underline hover:text-white">Reset Test</button>
+                <div className="mt-6 pt-4 border-t border-white/5 text-center animate-fade-in-up">
+                  <p className="text-white font-bold mb-1 text-lg">
+                    In that 2.8s gap, your customer left.
+                  </p>
+                  <p className="text-xs text-kc-muted mb-3 italic">
+                    "53% of visits are abandoned if a mobile site takes longer than 3 seconds to load."
+                  </p>
+                  <button onClick={resetSpeedTest} className="text-xs text-kc-accent uppercase font-bold tracking-widest hover:text-white transition-colors">
+                    Reset Test
+                  </button>
                 </div>
               )}
             </div>

@@ -1,0 +1,15 @@
+import Navbar from "@/components/ui/Navbar";
+import About from "@/components/sections/About";
+import SalesBot from "@/components/ui/SalesBot";
+
+export default function AboutPage() {
+  return (
+    <main className="min-h-screen bg-kc-dark text-white">
+      <Navbar />
+      <div className="pt-20"> {/* Padding for Navbar */}
+        <About />
+      </div>
+      <SalesBot />
+    </main>
+  );
+}

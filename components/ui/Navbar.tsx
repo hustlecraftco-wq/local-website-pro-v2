@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Phone, Menu, X, ArrowRight, CheckCircle } from "lucide-react";
+import { Menu, X, ArrowRight, CheckCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
@@ -19,15 +19,16 @@ export default function Navbar() {
   // Form Submit Handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // This is where we will hook up the automatic email sender next
     alert("Lead Captured! (Next Step: We connect this to your email)");
     setIsModalOpen(false);
   };
 
+  // UPDATED LINKS: These now match the Section IDs perfectly
   const navLinks = [
-    { name: "The System", href: "#compare" },
+    { name: "About", href: "#about" },          // Added as requested
+    { name: "The System", href: "#features" },  // Fixed: Points to Features.tsx
+    { name: "Speed", href: "#speed" },          // Fixed: Points to SpeedComparison.tsx
     { name: "Pricing", href: "#pricing" },
-    { name: "Speed Test", href: "#speed" },
   ];
 
   return (
@@ -102,7 +103,6 @@ export default function Navbar() {
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <h3 className="text-2xl font-black text-white mb-1">Let's Build Your Asset.</h3>
-                    {/* UPDATED COPY HERE */}
                     <p className="text-kc-muted text-sm">Fill this out. We'll send a personal intro via text or email shortly.</p>
                   </div>
                   <button onClick={() => setIsModalOpen(false)} className="text-kc-muted hover:text-white">
@@ -127,7 +127,6 @@ export default function Navbar() {
                     </div>
                   </div>
 
-                  {/* UPDATED: TEXT AREA INSTEAD OF DROPDOWN */}
                   <div>
                     <label className="block text-xs font-bold text-kc-muted uppercase tracking-wider mb-2">Tell us about your business</label>
                     <textarea 

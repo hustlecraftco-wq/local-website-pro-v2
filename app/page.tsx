@@ -1,27 +1,36 @@
-"use client";
 import Hero from "@/components/sections/Hero";
-import ComparisonTable from "@/components/sections/ComparisonTable";
-import BentoGrid from "@/components/sections/BentoGrid";
-import Pricing from "@/components/sections/Pricing";
-import Features from "@/components/sections/Features";
-import AnalyticsPreview from "@/components/sections/AnalyticsPreview"; // <--- 1. Import This
+import SpeedComparison from "@/components/sections/SpeedComparison";
+import Demos from "@/components/sections/Demos"; // IMPORT THE NEW SECTION
+import Features from "@/components/sections/Features"; 
+import About from "@/components/sections/About";
+import Pricing from "@/components/sections/Pricing"; 
+import Navbar from "@/components/ui/Navbar";
+import SalesBot from "@/components/ui/SalesBot";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-kc-dark text-white selection:bg-kc-accent selection:text-white">
+      <Navbar />
+      
+      {/* 1. HOOK */}
       <Hero />
-      <ComparisonTable />
-      <BentoGrid />
       
-      {/* 2. Add Analytics BEFORE Features (Builds trust before the deep dive) */}
-      <AnalyticsPreview /> 
-      
+      {/* 2. PROOF (Data) */}
+      <SpeedComparison />
+
+      {/* 3. VISUALS (The Goods) - NEW SECTION */}
+      <Demos />
+
+      {/* 4. EXPERTISE (The Tech) */}
       <Features />
-      <Pricing />
+
+      {/* 5. TRUST (The Man) */}
+      <About />
       
-      <footer className="py-12 text-center text-kc-muted text-sm border-t border-white/5">
-        <p>© 2025 Local Website Pro. Hand-Coded in Kansas City.</p>
-      </footer>
+      {/* 6. OFFER */}
+      <Pricing />
+
+      <SalesBot />
     </main>
   );
 }
