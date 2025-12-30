@@ -13,18 +13,17 @@ type Message = {
 export default function SalesBot() {
   // --- STATE ---
   const [isOpen, setIsOpen] = useState(false);
-  const [showRobot, setShowRobot] = useState(true); // Default: Robot is visible
-  const [isLoaded, setIsLoaded] = useState(false); // Lazy load trigger
+  const [showRobot, setShowRobot] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false); // Delay Switch
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "Yo. I'm The Foreman. I run the digital job site here. You looking to build something, or just kicking tires?" }
+    { role: "bot", text: "Hello. I'm The Foreman. I run the digital job site here. You looking to build something, or just kicking tires?" }
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // --- LAZY LOAD ROBOT (Protects 0.4s Page Speed) ---
+  // --- 1. THE 2.5s DELAY (Keeps site fast) ---
   useEffect(() => {
-    // Wait 2.5 seconds before loading the 3D model
     const timer = setTimeout(() => setIsLoaded(true), 2500);
     return () => clearTimeout(timer);
   }, []);
@@ -39,19 +38,19 @@ export default function SalesBot() {
   // --- HANDLERS ---
   const handleDismissRobot = (e: any) => {
     e.stopPropagation();
-    setShowRobot(false); // User clicked X, hide robot, show Blob
+    setShowRobot(false); 
   };
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    // 1. Add User Message
+    // Add User Message
     const userMsg = input;
     setMessages(prev => [...prev, { role: "user", text: userMsg }]);
     setInput("");
     setIsTyping(true);
 
-    // 2. SIMULATED AI RESPONSE
+    // AI Response (Simulated)
     setTimeout(() => {
       let botResponse = "I'm just a demo bot right now, but soon I'll be hooked up to GPT-4 to sell for you.";
       
@@ -71,10 +70,9 @@ export default function SalesBot() {
 
   return (
     <>
-      {/* CHANGED: bottom-6 -> bottom-4 to move it down */}
       <div className="fixed bottom-4 right-6 z-50 flex flex-col items-end gap-4">
 
-        {/* --- 1. THE ROBOT (STOREFRONT GREETER) --- */}
+        {/* --- ROBOT CONTAINER --- */}
         <AnimatePresence>
           {showRobot && isLoaded && !isOpen && (
             <motion.div 
@@ -83,28 +81,31 @@ export default function SalesBot() {
               exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
               className="relative group"
             >
-              {/* Dismiss Button (Top Right of Robot) */}
+              {/* Dismiss Button */}
               <button 
                 onClick={handleDismissRobot}
-                className="absolute -top-2 -right-4 z-20 bg-black/60 hover:bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md border border-white/10"
+                className="absolute -top-2 -right-4 z-40 bg-black/60 hover:bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md border border-white/10"
                 title="Put robot away"
               >
                 <X className="w-3 h-3" />
               </button>
 
-              {/* Speech Bubble */}
+              {/* Speech Bubble (CLICK THIS TO CHAT) */}
               <div 
                 onClick={() => setIsOpen(true)}
-                className="cursor-pointer absolute -top-14 right-0 bg-white text-black px-4 py-2 rounded-xl rounded-br-none shadow-xl text-xs font-bold whitespace-nowrap animate-bounce-subtle origin-bottom-right hover:scale-105 transition-transform"
+                className="cursor-pointer absolute -top-14 right-10 bg-white text-black px-4 py-2 rounded-xl rounded-br-none shadow-xl text-xs font-bold whitespace-nowrap animate-bounce-subtle origin-bottom-right hover:scale-105 transition-transform z-40"
               >
                 Hi! Need a quote? 👋
               </div>
 
-              {/* THE 3D SCENE (Click to Open Chat) */}
-              {/* CHANGED: w-[180px] h-[180px] -> w-[200px] h-[200px] to make it bigger */}
+              {/* THE 3D SCENE (REACT COMPONENT METHOD) 
+                  - Supports Transparency (No Black Box)
+                  - Tracks Mouse (Interactive)
+                  - Sized Bigger (400px on Desktop)
+              */}
               <div 
                 onClick={() => setIsOpen(true)}
-                className="w-[200px] h-[200px] md:w-[400px] md:h-[400px] cursor-pointer hover:scale-105 transition-transform"
+                className="w-[200px] h-[200px] md:w-[400px] md:h-[400px] cursor-pointer hover:scale-105 transition-transform relative z-30 -mr-10 -mb-10"
               >
                 <Spline scene="https://prod.spline.design/7u1sFSqNjkJO1NtH/scene.splinecode" />
               </div>
@@ -112,8 +113,7 @@ export default function SalesBot() {
           )}
         </AnimatePresence>
 
-        {/* --- 2. THE BLOB (FALLBACK BUTTON) --- */}
-        {/* Shows if Robot is dismissed OR Robot hasn't loaded yet */}
+        {/* --- FALLBACK BLOB --- */}
         {(!showRobot || !isLoaded) && !isOpen && (
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -126,7 +126,7 @@ export default function SalesBot() {
           </motion.button>
         )}
 
-        {/* --- 3. THE CHAT WINDOW (MODAL) --- */}
+        {/* --- CHAT WINDOW --- */}
         <AnimatePresence>
           {isOpen && (
             <motion.div 
@@ -135,7 +135,6 @@ export default function SalesBot() {
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               className="w-[90vw] md:w-[380px] h-[500px] bg-[#0A0A0A] border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
             >
-              {/* Header */}
               <div className="p-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-kc-accent flex items-center justify-center">
@@ -151,23 +150,15 @@ export default function SalesBot() {
                     </div>
                   </div>
                 </div>
-                {/* Close Button */}
                 <button onClick={() => setIsOpen(false)} className="text-kc-muted hover:text-white transition-colors">
                     <MinusCircle className="w-6 h-6" />
                 </button>
               </div>
 
-              {/* Messages Area */}
               <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-black/20">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                    <div 
-                      className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed ${
-                        msg.role === "user" 
-                          ? "bg-kc-accent text-white rounded-br-none" 
-                          : "bg-white/10 text-white rounded-bl-none border border-white/5"
-                      }`}
-                    >
+                    <div className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed ${msg.role === "user" ? "bg-kc-accent text-white rounded-br-none" : "bg-white/10 text-white rounded-bl-none border border-white/5"}`}>
                       {msg.text}
                     </div>
                   </div>
@@ -183,12 +174,8 @@ export default function SalesBot() {
                 )}
               </div>
 
-              {/* Input Area */}
               <div className="p-4 bg-white/5 border-t border-white/5">
-                <form 
-                  onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-                  className="flex gap-2"
-                >
+                <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex gap-2">
                   <input 
                     type="text" 
                     value={input}
@@ -201,7 +188,6 @@ export default function SalesBot() {
                   </button>
                 </form>
               </div>
-
             </motion.div>
           )}
         </AnimatePresence>
