@@ -1,5 +1,6 @@
 "use client";
-import { useRef } from "react";
+
+import { useRef, useEffect, useState } from "react";
 import { ExternalLink, ArrowRight, Phone, Scale, TrendingUp, Activity, Hammer, Droplets, Leaf } from "lucide-react";
 
 // --- DATA ---
@@ -12,7 +13,7 @@ const demos = [
     desc: "Built for speed. Sticky 'Call Now' buttons and '24/7 Service' badges that drive immediate emergency calls.",
     icon: <Droplets className="w-5 h-5 text-blue-400" />,
     video: "/demo-plumber.mp4",
-    thumbnail: "/thumb-plumber.jpg" // YOU NEED TO CREATE THIS IMAGE
+    thumbnail: "/thumb-plumber.jpg"
   },
   {
     category: "Trade",
@@ -66,23 +67,70 @@ const demos = [
 // --- COMPONENT: VIDEO CARD ---
 function DemoCard({ demo }: { demo: any }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Intersection Observer for scroll detection
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+        
+        // Auto-play on mobile when in view
+        if (isMobile && videoRef.current) {
+          if (entry.isIntersecting) {
+            videoRef.current.play().catch(e => console.log("Autoplay prevented:", e));
+          } else {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+          }
+        }
+      },
+      {
+        threshold: 0.5, // Trigger when 50% of video is visible
+      }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        observer.unobserve(containerRef.current);
+      }
+    };
+  }, [isMobile]);
+
+  // Desktop: Mouse hover to play
   const handleMouseEnter = () => {
-    if (videoRef.current) {
+    if (!isMobile && videoRef.current) {
       videoRef.current.play().catch(e => console.log("Autoplay prevented:", e));
     }
   };
 
   const handleMouseLeave = () => {
-    if (videoRef.current) {
+    if (!isMobile && videoRef.current) {
       videoRef.current.pause();
-      videoRef.current.currentTime = 0; // Reset video to start
-      videoRef.current.load(); // Forces the poster image to reappear immediately
+      videoRef.current.currentTime = 0;
+      videoRef.current.load();
     }
   };
 
   return (
     <div 
+      ref={containerRef}
       className="group relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 hover:border-kc-accent/40 transition-all hover:-translate-y-2 duration-300 flex flex-col"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -94,9 +142,11 @@ function DemoCard({ demo }: { demo: any }) {
         {/* VIDEO PLAYER with POSTER IMAGE */}
         <video
           ref={videoRef}
-          muted loop playsInline
+          muted 
+          loop 
+          playsInline
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 z-0"
-          poster={demo.thumbnail} // THIS SHOWS THE IMAGE FIRST
+          poster={demo.thumbnail}
         >
           <source src={demo.video} type="video/mp4" />
         </video>
