@@ -12,10 +12,10 @@ const RobotScene = memo(function RobotScene() {
   );
 });
 
-export default function Robot({ showRobot, isLoaded, isOpen }: { showRobot: boolean; isLoaded: boolean; isOpen: boolean }) {
+export default function Robot({ showRobot, isLoaded }: { showRobot: boolean; isLoaded: boolean }) {
   return (
     <>
-      {showRobot && isLoaded && !isOpen && (
+      {showRobot && isLoaded && (
         <motion.div 
           key="robot-main"
           className="fixed bottom-0 right-0 z-30 pointer-events-auto"
