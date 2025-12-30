@@ -1,5 +1,4 @@
 "use client"; 
-// ^^^ FIXED: Removed the accidental 'k' that was here
 
 import { useState, useRef, useEffect } from "react";
 import { MessageSquare, X, Send, Bot, MinusCircle } from "lucide-react";
@@ -32,7 +31,7 @@ export default function SalesBot() {
     return () => clearTimeout(timer);
   }, []);
 
-  // --- 2. TEXT BUBBLE TIMER (Shows when robot loads, hides after 3s) ---
+  // --- 2. TEXT BUBBLE TIMER ---
   useEffect(() => {
     if (isLoaded && showRobot) {
         setShowBubble(true);
@@ -83,10 +82,7 @@ export default function SalesBot() {
 
   return (
     <>
-      {/* Container: Fixed to bottom-right */}
       <div className="fixed bottom-0 right-0 z-50 flex flex-col items-end pointer-events-none">
-        {/* Note: 'pointer-events-none' on the wrapper lets clicks pass through empty spaces, 
-            but we re-enable it on the buttons/robot below */}
 
         {/* --- ROBOT CONTAINER --- */}
         <AnimatePresence>
@@ -95,7 +91,7 @@ export default function SalesBot() {
               initial={{ opacity: 0, y: 20, scale: 0.8 }} 
               animate={{ opacity: 1, y: 0, scale: 1 }} 
               exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-              className="relative group pointer-events-auto" // Re-enable pointer events for the robot group
+              className="relative group pointer-events-auto"
             >
               {/* Dismiss Button */}
               <button 
@@ -106,7 +102,7 @@ export default function SalesBot() {
                 <X className="w-3 h-3" />
               </button>
 
-              {/* SPEECH BUBBLE (Auto-Hides) */}
+              {/* SPEECH BUBBLE */}
               <AnimatePresence>
                 {showBubble && (
                     <motion.div 
@@ -121,15 +117,13 @@ export default function SalesBot() {
                 )}
               </AnimatePresence>
 
-              {/* THE 3D SCENE */}
+              {/* THE 3D SCENE 
+                  FIX: Removed 'hover:scale-105 transition-transform' to stop the duplicate ghosting glitch.
+              */}
               <div 
                 onClick={() => setIsOpen(true)}
-                className="w-[250px] h-[250px] md:w-[600px] md:h-[600px] cursor-pointer hover:scale-105 transition-transform relative z-30"
+                className="w-[250px] h-[250px] md:w-[600px] md:h-[600px] cursor-pointer relative z-30"
               >
-                {/* MOBILE FIX: 'pointer-events-none' (Mobile) -> 'md:pointer-events-auto' (Desktop)
-                   This means on mobile, the 3D canvas ignores touch (no tracking), 
-                   but the parent div onClick still works so you can open the chat.
-                */}
                 <div className="w-full h-full pointer-events-none md:pointer-events-auto">
                    <Spline scene="https://prod.spline.design/7u1sFSqNjkJO1NtH/scene.splinecode" />
                 </div>
