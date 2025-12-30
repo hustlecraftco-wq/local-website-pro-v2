@@ -1,6 +1,6 @@
 import Navbar from "@/components/ui/Navbar";
 import About from "@/components/sections/About";
-import SalesBot from "@/components/ui/SalesBot";
+import Robot from "@/components/ui/SalesBot";
 
 export default function AboutPage() {
   return (
@@ -9,7 +9,7 @@ export default function AboutPage() {
       <div className="pt-20"> {/* Padding for Navbar */}
         <About />
       </div>
-      <SalesBot />
+      <Robot />
     </main>
   );
 }
