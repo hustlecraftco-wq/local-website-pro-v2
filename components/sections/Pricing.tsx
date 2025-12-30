@@ -83,7 +83,7 @@ export default function Pricing() {
            <div className="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-kc-muted mb-4">Step 2</div>
           <h2 className="text-3xl md:text-4xl font-black text-white mb-6">Choose Your Support.</h2>
           <p className="text-kc-muted text-lg max-w-2xl mx-auto">
-            You own the car. Now, do you want to drive it yourself, or hire a mechanic?
+            You own the car. Now, do you want to service it yourself, or hire a mechanic?
           </p>
         </div>
 
