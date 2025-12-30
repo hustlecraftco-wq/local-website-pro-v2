@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@material-tailwind/react": "^2.1.9",
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.12.28",
     "clsx": "^2.1.0",
     "flowbite": "^2.3.0",
     "flowbite-react": "^0.7.2",
