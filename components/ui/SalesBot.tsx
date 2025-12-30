@@ -1,9 +1,18 @@
 "use client"; 
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import { MessageSquare, X, Send, Bot, MinusCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Spline from '@splinetool/react-spline';
+
+// --- 1. MEMOIZED ROBOT (Isolates 3D Scene) ---
+const RobotScene = memo(function RobotScene() {
+  return (
+    <div className="w-full h-full pointer-events-none md:pointer-events-auto">
+       <Spline scene="https://prod.spline.design/7u1sFSqNjkJO1NtH/scene.splinecode" />
+    </div>
+  );
+});
 
 type Message = {
   role: "user" | "bot";
@@ -11,7 +20,6 @@ type Message = {
 };
 
 export default function SalesBot() {
-  // --- STATE ---
   const [isOpen, setIsOpen] = useState(false);
   const [showRobot, setShowRobot] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false); 
@@ -23,15 +31,11 @@ export default function SalesBot() {
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // --- 1. LOAD ROBOT (2.5s Delay) ---
   useEffect(() => {
-    const timer = setTimeout(() => {
-        setIsLoaded(true);
-    }, 2500);
+    const timer = setTimeout(() => setIsLoaded(true), 2500);
     return () => clearTimeout(timer);
   }, []);
 
-  // --- 2. TEXT BUBBLE TIMER ---
   useEffect(() => {
     if (isLoaded && showRobot) {
         setShowBubble(true);
@@ -40,14 +44,12 @@ export default function SalesBot() {
     }
   }, [isLoaded, showRobot]);
 
-  // --- AUTO SCROLL ---
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // --- HANDLERS ---
   const handleDismissRobot = (e: any) => {
     e.stopPropagation();
     setShowRobot(false); 
@@ -76,20 +78,21 @@ export default function SalesBot() {
       <div className="fixed bottom-0 right-0 z-50 flex flex-col items-end pointer-events-none">
 
         {/* --- ROBOT CONTAINER --- */}
-        {/* We removed <AnimatePresence> and <motion.div> here to prevent the 'Ghost' duplicate glitch */}
+        {/* FIX: Removed 'group' and all hover/transform CSS classes */}
         {showRobot && isLoaded && !isOpen && (
-            <div className="relative group pointer-events-auto fade-in-simple">
+            <div className="relative pointer-events-auto">
               
-              {/* Dismiss Button */}
+              {/* DISMISS BUTTON */}
+              {/* FIX: Removed 'group-hover' logic. It is now always visible but subtle. */}
               <button 
                 onClick={handleDismissRobot}
-                className="absolute top-[20%] right-[10%] z-40 bg-black/60 hover:bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md border border-white/10"
+                className="absolute top-[20%] right-[10%] z-40 bg-black/40 hover:bg-red-500 text-white p-1.5 rounded-full backdrop-blur-md border border-white/10 transition-colors"
                 title="Put robot away"
               >
                 <X className="w-3 h-3" />
               </button>
 
-              {/* SPEECH BUBBLE (We keep animation here because it's just text) */}
+              {/* SPEECH BUBBLE */}
               <AnimatePresence>
                 {showBubble && (
                     <motion.div 
@@ -105,16 +108,12 @@ export default function SalesBot() {
               </AnimatePresence>
 
               {/* THE 3D SCENE */}
+              {/* FIX: Removed hover scales. Kept it purely static dimensions. */}
               <div 
                 onClick={() => setIsOpen(true)}
                 className="w-[250px] h-[250px] md:w-[600px] md:h-[600px] cursor-pointer relative z-30"
               >
-                {/* MOBILE FIX: 'pointer-events-none' (Mobile) prevents touch scrolling issues.
-                   DESKTOP FIX: 'md:pointer-events-auto' allows mouse tracking.
-                */}
-                <div className="w-full h-full pointer-events-none md:pointer-events-auto">
-                   <Spline scene="https://prod.spline.design/7u1sFSqNjkJO1NtH/scene.splinecode" />
-                </div>
+                 <RobotScene />
               </div>
             </div>
         )}
