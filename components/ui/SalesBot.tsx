@@ -1,11 +1,12 @@
-"use client"; 
+"use client";
 
 import { useState, useRef, useEffect, memo } from "react";
 import { MessageSquare, X, Send, Bot, MinusCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Spline from '@splinetool/react-spline';
 
-// --- 1. MEMOIZED ROBOT (Isolates 3D Scene) ---
+// --- MEMOIZED ROBOT (Isolates 3D Scene) ---
+// This ensures the robot component itself is stable and doesn't re-render unnecessarily
 const RobotScene = memo(function RobotScene() {
   return (
     <div className="w-full h-full pointer-events-none md:pointer-events-auto">
@@ -22,7 +23,7 @@ type Message = {
 export default function SalesBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [showRobot, setShowRobot] = useState(true);
-  const [isLoaded, setIsLoaded] = useState(false); 
+  const [isLoaded, setIsLoaded] = useState(false);
   const [showBubble, setShowBubble] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: "bot", text: "Yo. I'm The Foreman. I run the digital job site here. You looking to build something, or just kicking tires?" }
@@ -31,19 +32,22 @@ export default function SalesBot() {
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Load Timer
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 2500);
     return () => clearTimeout(timer);
   }, []);
 
+  // Bubble Timer
   useEffect(() => {
     if (isLoaded && showRobot) {
         setShowBubble(true);
-        const hideTimer = setTimeout(() => setShowBubble(false), 3000); 
+        const hideTimer = setTimeout(() => setShowBubble(false), 3000);
         return () => clearTimeout(hideTimer);
     }
   }, [isLoaded, showRobot]);
 
+  // Scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -52,7 +56,7 @@ export default function SalesBot() {
 
   const handleDismissRobot = (e: any) => {
     e.stopPropagation();
-    setShowRobot(false); 
+    setShowRobot(false);
   };
 
   const handleSend = async () => {
@@ -77,14 +81,12 @@ export default function SalesBot() {
     <>
       <div className="fixed bottom-0 right-0 z-50 flex flex-col items-end pointer-events-none">
 
-        {/* --- ROBOT CONTAINER --- */}
-        {/* FIX: Removed 'group' and all hover/transform CSS classes */}
+        {/* --- ROBOT CONTAINER (STRICTLY CONDITIONED) --- */}
         {showRobot && isLoaded && !isOpen && (
-            <div className="relative pointer-events-auto">
-              
+            <div className="relative pointer-events-auto fade-in-simple">
+
               {/* DISMISS BUTTON */}
-              {/* FIX: Removed 'group-hover' logic. It is now always visible but subtle. */}
-              <button 
+              <button
                 onClick={handleDismissRobot}
                 className="absolute top-[20%] right-[10%] z-40 bg-black/40 hover:bg-red-500 text-white p-1.5 rounded-full backdrop-blur-md border border-white/10 transition-colors"
                 title="Put robot away"
@@ -95,7 +97,7 @@ export default function SalesBot() {
               {/* SPEECH BUBBLE */}
               <AnimatePresence>
                 {showBubble && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: 10, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.9 }}
@@ -108,8 +110,7 @@ export default function SalesBot() {
               </AnimatePresence>
 
               {/* THE 3D SCENE */}
-              {/* FIX: Removed hover scales. Kept it purely static dimensions. */}
-              <div 
+              <div
                 onClick={() => setIsOpen(true)}
                 className="w-[250px] h-[250px] md:w-[600px] md:h-[600px] cursor-pointer relative z-30"
               >
@@ -137,7 +138,7 @@ export default function SalesBot() {
         <AnimatePresence>
           {isOpen && (
             <div className="fixed bottom-6 right-6 z-50 pointer-events-auto">
-                <motion.div 
+                <motion.div
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -184,11 +185,11 @@ export default function SalesBot() {
 
                 <div className="p-4 bg-white/5 border-t border-white/5">
                     <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex gap-2">
-                    <input 
-                        type="text" 
+                    <input
+                        type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ask about pricing..." 
+                        placeholder="Ask about pricing..."
                         className="flex-1 bg-[#050505] border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:border-kc-accent focus:outline-none transition-colors"
                     />
                     <button type="submit" className="p-2 bg-white/10 rounded-xl hover:bg-kc-accent hover:text-white transition-colors text-kc-muted">
