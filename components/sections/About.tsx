@@ -9,13 +9,13 @@ export default function About() {
       <div className="absolute inset-0 z-0">
         <video 
           autoPlay muted loop playsInline 
-          className="w-full h-full object-cover opacity-70" // 90% Opacity + Full Color (No Grayscale)
+          className="w-full h-full object-cover opacity-90" // 90% Opacity + Full Color (No Grayscale)
         >
           {/* Make sure 'carrier-launch.mp4' is in your public folder */}
           <source src="/carrier-launch.mp4" type="video/mp4" />
         </video>
         {/* Dark Gradient Overlay (To make text readable against full color video) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080808] via-[#080808]/90 to-[#080808]/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080808] via-[#080808]/90 to-[#080808]/50"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">

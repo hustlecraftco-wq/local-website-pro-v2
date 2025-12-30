@@ -24,7 +24,7 @@ export default function Pricing() {
           {/* TIER 1: STARTER */}
           <div className="p-8 rounded-3xl border border-white/10 bg-white/5 hover:border-white/20 transition-all flex flex-col">
             <h3 className="text-xl font-bold text-white mb-2">The Landing Page</h3>
-            <div className="text-4xl font-black text-white mb-1">$1,250</div>
+            <div className="text-4xl font-black text-white mb-1">$1,249</div>
             <p className="text-sm text-kc-muted mb-8">Perfect for Ads & Speed.</p>
             
             <ul className="space-y-4 mb-8 flex-1">
@@ -45,7 +45,7 @@ export default function Pricing() {
             </div>
 
             <h3 className="text-xl font-bold text-white mb-2">The Trade Asset</h3>
-            <div className="text-5xl font-black text-white mb-1">$2,997</div>
+            <div className="text-5xl font-black text-white mb-1">$2,999</div>
             <p className="text-sm text-kc-success font-bold mb-8">Full 5-Page Authority Site.</p>
             
             <ul className="space-y-4 mb-8 flex-1">
@@ -108,7 +108,7 @@ export default function Pricing() {
           {/* OPTION 2: PEACE OF MIND */}
           <div className="relative p-8 rounded-3xl border border-kc-accent/50 bg-gradient-to-b from-white/10 to-black/40 shadow-2xl shadow-orange-900/20 z-10 md:scale-105">
             <h3 className="text-xl font-bold text-white mb-2">Peace of Mind</h3>
-            <div className="text-5xl font-black text-white mb-1">$99<span className="text-lg text-white/50 font-normal">/mo</span></div>
+            <div className="text-5xl font-black text-white mb-1">$149<span className="text-lg text-white/50 font-normal">/mo</span></div>
             <p className="text-sm text-kc-success font-bold mb-8">Hosting + Unlimited Updates.</p>
             
             <ul className="space-y-4 mb-8">

@@ -62,7 +62,7 @@ export default function SpeedComparison() {
             <div>
               <h3 className="text-xl font-bold text-white mb-1">You are losing 20% of your revenue.</h3>
               <p className="text-kc-muted text-sm">
-                Google data shows that as page load time goes from 1s to 3s, the probability of a user bouncing increases by 32%. If they can't see it, they can't buy it.
+                Google data shows that as page load time goes from 1s to 3s, the probability of a user leaving increases by 32%. If they can't see it, they can't buy it.
               </p>
             </div>
           </div>
