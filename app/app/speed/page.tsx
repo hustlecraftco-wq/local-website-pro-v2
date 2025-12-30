@@ -1,6 +1,6 @@
 import Navbar from "@/components/ui/Navbar";
 import SpeedComparison from "@/components/sections/SpeedComparison";
-import Robot from "@/components/ui/SalesBot";
+import Robot from "@/components/ui/Robot";
 
 export default function SpeedPage() {
   return (

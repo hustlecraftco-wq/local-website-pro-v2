@@ -1,6 +1,6 @@
 import Navbar from "@/components/ui/Navbar";
 import About from "@/components/sections/About";
-import Robot from "@/components/ui/SalesBot";
+import Robot from "@/components/ui/Robot";
 
 export default function AboutPage() {
   return (
