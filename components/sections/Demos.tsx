@@ -155,7 +155,7 @@ function DemoCard({ demo }: { demo: any }) {
         <div className="absolute inset-0 bg-black/20 group-hover:opacity-0 transition-opacity duration-500 pointer-events-none"></div>
 
         {/* 2. The "View Live" Overlay (Appears on Hover) */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px] z-20">
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 z-20">
             <span className="px-5 py-2.5 bg-kc-accent text-white font-bold rounded-full text-xs flex items-center gap-2 transform scale-90 group-hover:scale-100 transition-transform cursor-pointer shadow-xl">
                 View Live Demo <ExternalLink className="w-3 h-3"/>
             </span>
