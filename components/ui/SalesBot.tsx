@@ -61,11 +61,6 @@ export default function SalesBot() {
     }
   }, [messages]);
 
-  const handleDismissRobot = (e: any) => {
-    e.stopPropagation();
-    setShowRobot(false); 
-  };
-
   const handleSend = async () => {
     if (!input.trim()) return;
     const userMsg = input;
@@ -88,69 +83,65 @@ export default function SalesBot() {
     <>
       <div className="fixed bottom-0 right-0 z-50 flex flex-col items-end pointer-events-none">
 
-        {/* --- ROBOT CONTAINER --- */}
+        {/* --- ROBOT CONTAINER (CLEAN - NO BUTTONS) --- */}
         {showRobot && isLoaded && !isOpen && (
             <motion.div 
+              key="robot-main"
               className="relative pointer-events-auto"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.2 }}
             >
-              
-              {/* DISMISS BUTTON */}
-              <button 
-                onClick={handleDismissRobot}
-                className="absolute top-[20%] right-[10%] z-40 bg-black/40 hover:bg-red-500 text-white p-1.5 rounded-full backdrop-blur-md border border-white/10 transition-colors"
-                title="Put robot away"
-              >
-                <X className="w-3 h-3" />
-              </button>
-
-              {/* 1. WELCOME BUBBLE (Temporary) */}
-              <AnimatePresence mode="wait">
-                {showBubble && (
-                    <motion.div 
-                        key="welcome-bubble"
-                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.9 }}
-                        className="absolute top-[10%] right-[15%] bg-white text-black px-4 py-3 rounded-xl rounded-br-none shadow-xl text-xs font-bold whitespace-nowrap origin-bottom-right z-40 pointer-events-none"
-                    >
-                        Welcome in! Click the dots if you need me!
-                    </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* 2. THE "..." TRIGGER BUTTON (Permanent after Welcome) */}
-              <AnimatePresence mode="wait">
-                {showTrigger && !showBubble && (
-                    <motion.button
-                        key="trigger-button"
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.5 }}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => setIsOpen(true)}
-                        className="absolute top-[10%] right-[15%] bg-white text-black p-3 rounded-full shadow-xl z-50 hover:bg-kc-accent hover:text-white transition-colors border border-black/10"
-                    >
-                        <MoreHorizontal className="w-5 h-5" />
-                    </motion.button>
-                )}
-              </AnimatePresence>
-
-              {/* THE 3D SCENE (Visual Only - No Click Handler) */}
-              <div className="w-[250px] h-[250px] md:w-[600px] md:h-[600px] relative z-30">
+              {/* THE 3D SCENE (Visual Only - No Click Handler, No Buttons) */}
+              <div key="spline-container" className="w-[250px] h-[250px] md:w-[600px] md:h-[600px] relative z-30">
                  <RobotScene />
               </div>
             </motion.div>
         )}
 
+        {/* --- WELCOME BUBBLE & "..." BUTTON (TOP OF PAGE) --- */}
+        {showRobot && isLoaded && !isOpen && (
+          <div className="fixed top-6 right-6 z-40 pointer-events-none">
+            {/* 1. WELCOME BUBBLE */}
+            <AnimatePresence mode="wait">
+              {showBubble && (
+                  <motion.div 
+                      key="welcome-bubble"
+                      initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.9 }}
+                      className="bg-white text-black px-4 py-3 rounded-xl rounded-tr-none shadow-lg text-xs font-bold whitespace-nowrap"
+                  >
+                      Welcome in! Click the dots if you need me!
+                  </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* 2. THE "..." TRIGGER BUTTON */}
+            <AnimatePresence mode="wait">
+              {showTrigger && !showBubble && (
+                  <motion.button
+                      key="trigger-button"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setIsOpen(true)}
+                      className="pointer-events-auto bg-white text-black p-2.5 rounded-full shadow-lg hover:bg-kc-accent hover:text-white transition-colors border border-black/10"
+                  >
+                      <MoreHorizontal className="w-5 h-5" />
+                  </motion.button>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
         {/* --- FALLBACK BLOB --- */}
         {(!showRobot || !isLoaded) && !isOpen && (
           <motion.div 
-            className="fixed bottom-6 right-6 pointer-events-auto"
+            className="fixed top-6 right-6 pointer-events-auto"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
@@ -159,74 +150,74 @@ export default function SalesBot() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => { setIsOpen(true); setShowRobot(false); }}
-                className="w-14 h-14 bg-kc-accent rounded-full flex items-center justify-center text-white shadow-lg shadow-orange-900/30 hover:bg-orange-600 transition-colors relative"
+                className="w-12 h-12 bg-kc-accent rounded-full flex items-center justify-center text-white shadow-lg hover:bg-orange-600 transition-colors relative"
             >
-                <MessageSquare className="w-6 h-6 fill-current" />
-                <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#050505]"></span>
+                <MessageSquare className="w-5 h-5 fill-current" />
+                <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#050505]"></span>
             </motion.button>
           </motion.div>
         )}
 
-        {/* --- CHAT WINDOW --- */}
+        {/* --- CHAT WINDOW (SMALLER, RECTANGULAR) --- */}
         <AnimatePresence>
           {isOpen && (
-            <div className="fixed bottom-6 right-6 z-50 pointer-events-auto">
+            <div className="fixed top-20 right-6 z-50 pointer-events-auto">
                 <motion.div 
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                initial={{ opacity: 0, y: -20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                className="w-[90vw] md:w-[380px] h-[500px] bg-[#0A0A0A] border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                className="w-[90vw] md:w-[360px] h-[420px] bg-[#0A0A0A] border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
                 >
-                <div className="p-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-kc-accent flex items-center justify-center">
-                        <Bot className="w-6 h-6 text-white" />
+                <div className="p-3 bg-white/5 border-b border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-kc-accent flex items-center justify-center flex-shrink-0">
+                        <Bot className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <div className="font-bold text-white flex items-center gap-2">
-                        The Foreman <span className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-kc-muted uppercase">AI</span>
+                        <div className="font-bold text-white text-sm flex items-center gap-2">
+                        The Foreman <span className="px-1.5 py-0.5 rounded bg-white/10 text-[9px] text-kc-muted uppercase">AI</span>
                         </div>
                         <div className="text-xs text-kc-success flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-kc-success animate-pulse"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-kc-success animate-pulse"></span>
                         Online
                         </div>
                     </div>
                     </div>
-                    <button onClick={() => setIsOpen(false)} className="text-kc-muted hover:text-white transition-colors">
-                        <MinusCircle className="w-6 h-6" />
+                    <button onClick={() => setIsOpen(false)} className="text-kc-muted hover:text-white transition-colors flex-shrink-0">
+                        <MinusCircle className="w-5 h-5" />
                     </button>
                 </div>
 
-                <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-black/20">
+                <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-3 bg-black/20">
                     {messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                        <div className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed ${msg.role === "user" ? "bg-kc-accent text-white rounded-br-none" : "bg-white/10 text-white rounded-bl-none border border-white/5"}`}>
+                        <div className={`max-w-[80%] p-2.5 rounded-xl text-xs leading-relaxed ${msg.role === "user" ? "bg-kc-accent text-white rounded-br-none" : "bg-white/10 text-white rounded-bl-none border border-white/5"}`}>
                         {msg.text}
                         </div>
                     </div>
                     ))}
                     {isTyping && (
                     <div className="flex justify-start">
-                        <div className="bg-white/5 p-3 rounded-2xl rounded-bl-none flex gap-1">
-                        <span className="w-1.5 h-1.5 bg-kc-muted/50 rounded-full animate-bounce"></span>
-                        <span className="w-1.5 h-1.5 bg-kc-muted/50 rounded-full animate-bounce delay-100"></span>
-                        <span className="w-1.5 h-1.5 bg-kc-muted/50 rounded-full animate-bounce delay-200"></span>
+                        <div className="bg-white/5 p-2.5 rounded-xl rounded-bl-none flex gap-1">
+                        <span className="w-1 h-1 bg-kc-muted/50 rounded-full animate-bounce"></span>
+                        <span className="w-1 h-1 bg-kc-muted/50 rounded-full animate-bounce delay-100"></span>
+                        <span className="w-1 h-1 bg-kc-muted/50 rounded-full animate-bounce delay-200"></span>
                         </div>
                     </div>
                     )}
                 </div>
 
-                <div className="p-4 bg-white/5 border-t border-white/5">
+                <div className="p-3 bg-white/5 border-t border-white/5">
                     <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex gap-2">
                     <input 
                         type="text" 
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Ask about pricing..." 
-                        className="flex-1 bg-[#050505] border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:border-kc-accent focus:outline-none transition-colors"
+                        className="flex-1 bg-[#050505] border border-white/10 rounded-lg px-3 py-2 text-white text-xs focus:border-kc-accent focus:outline-none transition-colors"
                     />
-                    <button type="submit" className="p-2 bg-white/10 rounded-xl hover:bg-kc-accent hover:text-white transition-colors text-kc-muted">
-                        <Send className="w-5 h-5" />
+                    <button type="submit" className="p-2 bg-white/10 rounded-lg hover:bg-kc-accent hover:text-white transition-colors text-kc-muted flex-shrink-0">
+                        <Send className="w-4 h-4" />
                     </button>
                     </form>
                 </div>
