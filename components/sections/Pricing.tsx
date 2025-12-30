@@ -1,143 +1,317 @@
 "use client";
-import { Check, X, TrendingUp, ShieldCheck, Zap, Globe, Bot, BarChart3, Rocket } from "lucide-react";
+
+import { useState, useRef, useEffect, memo } from "react";
+import Spline from '@splinetool/react-spline';
+import { Check, ArrowRight } from "lucide-react";
+
+// Memoized Spline Component
+const AnimationScene = memo(function AnimationScene() {
+  return (
+    <div className="w-full h-full">
+      <Spline scene="https://prod.spline.design/Np-gnO5Y5UwmUzxE/scene.splinecode" />
+    </div>
+  );
+});
 
 export default function Pricing() {
+  const [billingCycle, setBillingCycle] = useState("one-time");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+
+  // Intersection Observer for lazy loading
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          // Stop observing once loaded
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        observer.unobserve(containerRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <section id="pricing" className="py-24 px-6 relative overflow-hidden bg-kc-dark border-t border-white/5">
+    <section id="pricing" ref={containerRef} className="relative py-24 px-6 bg-kc-dark border-t border-white/5 overflow-hidden">
       
-      {/* Background Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-kc-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
+      {/* 3D ANIMATION BACKGROUND - Lazy Loaded */}
+      {isInView && (
+        <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+          <div className="w-full h-full">
+            <AnimationScene />
+          </div>
+        </div>
+      )}
 
-      <div className="max-w-7xl mx-auto">
+      {/* CONTENT OVERLAY */}
+      <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* --- STEP 1: THE BUILD (One-Time) --- */}
+        {/* HEADER */}
         <div className="text-center mb-16">
-          <div className="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-kc-muted mb-4">Step 1</div>
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Choose Your Weapon.</h2>
-          <p className="text-kc-muted text-lg max-w-2xl mx-auto">
-            One-time investment. You own the code 100% forever.
+          <h2 className="text-3xl md:text-5xl font-black text-white mb-6">
+            Own Your Asset. <span className="text-kc-accent">No Rental Fees.</span>
+          </h2>
+          <p className="text-kc-muted text-lg max-w-2xl mx-auto mb-8">
+            One price. Forever ownership. No monthly subscriptions. No surprise fees. You own the code.
           </p>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch mb-24">
-          
-          {/* TIER 1: STARTER */}
-          <div className="p-8 rounded-3xl border border-white/10 bg-white/5 hover:border-white/20 transition-all flex flex-col">
-            <h3 className="text-xl font-bold text-white mb-2">The Landing Page</h3>
-            <div className="text-4xl font-black text-white mb-1">$1,249</div>
-            <p className="text-sm text-kc-muted mb-8">Perfect for Ads & Speed.</p>
-            
-            <ul className="space-y-4 mb-8 flex-1">
-              <li className="flex items-center gap-3 text-kc-muted"><Check className="w-5 h-5 text-white"/> <strong>1-Page</strong> Conversion Scroll</li>
-              <li className="flex items-center gap-3 text-kc-muted"><Check className="w-5 h-5 text-white"/> <strong>0.4s</strong> Load Speed</li>
-              <li className="flex items-center gap-3 text-kc-muted"><Check className="w-5 h-5 text-white"/> <strong>Mobile</strong> First Design</li>
-              <li className="flex items-center gap-3 text-kc-muted"><Check className="w-5 h-5 text-white"/> <strong>Basic</strong> SEO Setup</li>
-            </ul>
-            <button className="w-full py-4 rounded-xl border border-white/20 hover:bg-white/10 text-white font-bold transition-all">
-              Start Basic Build
+          {/* TOGGLE */}
+          <div className="inline-flex items-center gap-4 bg-white/5 p-1 rounded-full border border-white/10 mb-12">
+            <button
+              onClick={() => setBillingCycle("one-time")}
+              className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
+                billingCycle === "one-time"
+                  ? "bg-kc-accent text-white"
+                  : "text-kc-muted hover:text-white"
+              }`}
+            >
+              One-Time Fee
+            </button>
+            <button
+              onClick={() => setBillingCycle("ongoing")}
+              className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
+                billingCycle === "ongoing"
+                  ? "bg-kc-accent text-white"
+                  : "text-kc-muted hover:text-white"
+              }`}
+            >
+              Support Plans
             </button>
           </div>
+        </div>
 
-          {/* TIER 2: THE ASSET - HERO */}
-          <div className="relative p-8 rounded-3xl border border-kc-accent/50 bg-gradient-to-b from-white/10 to-black/40 shadow-2xl shadow-orange-900/20 transform md:-translate-y-4 z-10 flex flex-col">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-kc-accent text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">
-              Most Popular
+        {/* PRICING CARDS */}
+        {billingCycle === "one-time" ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            
+            {/* STARTER */}
+            <div className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-kc-accent/50 transition-all group flex flex-col">
+              <div className="mb-6">
+                <h3 className="text-2xl font-black text-white mb-2">Starter</h3>
+                <p className="text-kc-muted text-sm">Perfect for local service contractors just getting online.</p>
+              </div>
+
+              <div className="mb-8">
+                <div className="text-4xl font-black text-white mb-2">$2,500</div>
+                <p className="text-kc-muted text-sm">One-time. You own it forever.</p>
+              </div>
+
+              <ul className="space-y-3 mb-8 flex-grow">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">5-7 page custom site</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Mobile optimized</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">SEO foundation</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Contact forms</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">0.4s load time</span>
+                </li>
+              </ul>
+
+              <button className="w-full py-3 bg-white/10 hover:bg-kc-accent text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 group/btn">
+                Get Started <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </button>
             </div>
 
-            <h3 className="text-xl font-bold text-white mb-2">The Trade Asset</h3>
-            <div className="text-5xl font-black text-white mb-1">$2,999</div>
-            <p className="text-sm text-kc-success font-bold mb-8">Full 5-Page Authority Site.</p>
-            
-            <ul className="space-y-4 mb-8 flex-1">
-              <li className="flex items-center gap-3 text-white"><Rocket className="w-5 h-5 text-kc-success"/> Everything in Starter</li>
-              <li className="flex items-center gap-3 text-white"><Check className="w-5 h-5 text-kc-success"/> <strong>5-Page</strong> Complete Build</li>
-              <li className="flex items-center gap-3 text-white"><Check className="w-5 h-5 text-kc-success"/> <strong>Advanced</strong> Local SEO</li>
-              <li className="flex items-center gap-3 text-white"><Check className="w-5 h-5 text-kc-success"/> <strong>Copywriting</strong> Included</li>
-              <li className="flex items-center gap-3 text-white"><Check className="w-5 h-5 text-kc-success"/> <strong>Lead</strong> Tracking Dashboard</li>
-            </ul>
-            <button className="w-full py-4 rounded-xl bg-kc-accent hover:scale-105 transition-transform text-white font-bold shadow-lg shadow-orange-900/40">
-              Build My Asset
-            </button>
-          </div>
+            {/* PROFESSIONAL (FEATURED) */}
+            <div className="p-8 rounded-3xl bg-gradient-to-b from-kc-accent/20 to-transparent border border-kc-accent hover:border-kc-accent transition-all group flex flex-col relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-kc-accent text-white text-xs font-bold rounded-full">
+                MOST POPULAR
+              </div>
 
-          {/* TIER 3: ENTERPRISE */}
-          <div className="p-8 rounded-3xl border border-white/10 bg-white/5 hover:border-white/20 transition-all flex flex-col">
-            <h3 className="text-xl font-bold text-white mb-2">Market Domination</h3>
-            <div className="text-4xl font-black text-white mb-1">Custom</div>
-            <p className="text-sm text-kc-muted mb-8">For multi-city expansion.</p>
-            
-            <ul className="space-y-4 mb-8 flex-1">
-              <li className="flex items-center gap-3 text-kc-muted"><Globe className="w-5 h-5 text-blue-400"/> <strong>Multi-City</strong> Pages (50+)</li>
-              <li className="flex items-center gap-3 text-kc-muted"><Bot className="w-5 h-5 text-purple-400"/> <strong>AI</strong> Chatbot Training</li>
-              <li className="flex items-center gap-3 text-kc-muted"><BarChart3 className="w-5 h-5 text-green-400"/> <strong>CRM</strong> Integration</li>
-              <li className="flex items-center gap-3 text-kc-muted"><Check className="w-5 h-5 text-white"/> <strong>Competitor</strong> Audit</li>
-            </ul>
-            <button className="w-full py-4 rounded-xl border border-white/20 hover:bg-white/10 text-white font-bold transition-all">
-              Contact Sales
-            </button>
-          </div>
-        </div>
+              <div className="mb-6">
+                <h3 className="text-2xl font-black text-white mb-2">Professional</h3>
+                <p className="text-kc-muted text-sm">For contractors who want everything.</p>
+              </div>
 
-        {/* --- STEP 2: THE ENGINE (Monthly) --- */}
-        <div className="text-center mb-16 pt-16 border-t border-white/5">
-           <div className="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-kc-muted mb-4">Step 2</div>
-          <h2 className="text-3xl md:text-4xl font-black text-white mb-6">Choose Your Support.</h2>
-          <p className="text-kc-muted text-lg max-w-2xl mx-auto">
-            You own the car. Now, do you want to service it yourself, or hire a mechanic?
-          </p>
-        </div>
+              <div className="mb-8">
+                <div className="text-4xl font-black text-kc-accent mb-2">$3,500</div>
+                <p className="text-kc-muted text-sm">One-time. You own it forever.</p>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
-          
-          {/* OPTION 1: DIY */}
-          <div className="p-8 rounded-3xl border border-white/5 bg-white/[0.02] hover:bg-white/5 transition-colors">
-            <h3 className="text-xl font-bold text-kc-muted mb-2">Self-Managed</h3>
-            <div className="text-4xl font-black text-white mb-1">$0<span className="text-lg text-kc-muted font-normal">/mo</span></div>
-            <p className="text-sm text-kc-muted mb-8">You handle the keys.</p>
-            
-            <ul className="space-y-4 mb-8">
-              <li className="flex items-center gap-3 text-kc-muted"><Check className="w-5 h-5 text-white"/> You own the repo</li>
-              <li className="flex items-center gap-3 text-kc-muted"><X className="w-5 h-5 text-red-500"/> No Updates</li>
-              <li className="flex items-center gap-3 text-kc-muted"><X className="w-5 h-5 text-red-500"/> No Hosting Support</li>
-            </ul>
-            <div className="w-full py-4 rounded-xl border border-dashed border-white/10 text-center text-kc-muted text-sm">
-              Great for Tech-Savvy Owners
+              <ul className="space-y-3 mb-8 flex-grow">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Everything in Starter, plus:</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">10-15 page custom site</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">AI chatbot (24/7)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">CRM integration</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Email automation</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Advanced SEO</span>
+                </li>
+              </ul>
+
+              <button className="w-full py-3 bg-kc-accent hover:bg-orange-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 group/btn">
+                Get Started <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </button>
+            </div>
+
+            {/* ENTERPRISE */}
+            <div className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-kc-accent/50 transition-all group flex flex-col">
+              <div className="mb-6">
+                <h3 className="text-2xl font-black text-white mb-2">Enterprise</h3>
+                <p className="text-kc-muted text-sm">Multi-location, custom integrations.</p>
+              </div>
+
+              <div className="mb-8">
+                <div className="text-4xl font-black text-white mb-2">$5,000+</div>
+                <p className="text-kc-muted text-sm">One-time. Custom quote.</p>
+              </div>
+
+              <ul className="space-y-3 mb-8 flex-grow">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Everything in Professional, plus:</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Unlimited pages</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Multi-location setup</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Custom integrations</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Priority support</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Training included</span>
+                </li>
+              </ul>
+
+              <button className="w-full py-3 bg-white/10 hover:bg-kc-accent text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 group/btn">
+                Get Started <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </button>
             </div>
           </div>
-
-          {/* OPTION 2: PEACE OF MIND */}
-          <div className="relative p-8 rounded-3xl border border-kc-accent/50 bg-gradient-to-b from-white/10 to-black/40 shadow-2xl shadow-orange-900/20 z-10 md:scale-105">
-            <h3 className="text-xl font-bold text-white mb-2">Peace of Mind</h3>
-            <div className="text-5xl font-black text-white mb-1">$149<span className="text-lg text-white/50 font-normal">/mo</span></div>
-            <p className="text-sm text-kc-success font-bold mb-8">Hosting + Unlimited Updates.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             
-            <ul className="space-y-4 mb-8">
-              <li className="flex items-center gap-3 text-white"><Check className="w-5 h-5 text-kc-success"/> <strong>Managed</strong> Hosting (Vercel)</li>
-              <li className="flex items-center gap-3 text-white"><Check className="w-5 h-5 text-kc-success"/> <strong>Unlimited</strong> Content Edits</li>
-              <li className="flex items-center gap-3 text-white"><ShieldCheck className="w-5 h-5 text-kc-success"/> <strong>Daily</strong> Backups & Security</li>
-              <li className="flex items-center gap-3 text-white"><Zap className="w-5 h-5 text-kc-success"/> <strong>Priority</strong> Support Line</li>
-            </ul>
-            <button className="block w-full py-4 rounded-xl bg-kc-accent text-center text-white font-bold hover:scale-105 transition-transform shadow-lg shadow-orange-900/40">
-              Select Care Plan
-            </button>
-          </div>
+            {/* SUPPORT PLAN 1 */}
+            <div className="p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-kc-accent/50 transition-all flex flex-col">
+              <h3 className="text-2xl font-black text-white mb-2">Basic Support</h3>
+              <p className="text-kc-muted text-sm mb-6">Email support & monthly updates</p>
+              
+              <div className="mb-8">
+                <div className="text-3xl font-black text-white mb-2">$299<span className="text-sm font-normal text-kc-muted">/month</span></div>
+              </div>
 
-          {/* OPTION 3: GROWTH */}
-          <div className="p-8 rounded-3xl border border-white/10 bg-white/5 hover:border-white/20 transition-colors">
-            <h3 className="text-xl font-bold text-white mb-2">Growth Partner</h3>
-            <div className="text-4xl font-black text-white mb-1">$299<span className="text-lg text-kc-muted font-normal">/mo</span></div>
-            <p className="text-sm text-kc-muted mb-8">Dominate your niche.</p>
-            
-            <ul className="space-y-4 mb-8">
-              <li className="flex items-center gap-3 text-kc-muted"><Check className="w-5 h-5 text-white"/> <strong>Everything</strong> in Peace of Mind</li>
-              <li className="flex items-center gap-3 text-kc-muted"><TrendingUp className="w-5 h-5 text-green-400"/> <strong>Monthly</strong> SEO Reporting</li>
-              <li className="flex items-center gap-3 text-kc-muted"><Check className="w-5 h-5 text-white"/> <strong>1 Blog Post</strong> / Month</li>
-              <li className="flex items-center gap-3 text-kc-muted"><Check className="w-5 h-5 text-white"/> <strong>Google</strong> Business Management</li>
-            </ul>
-            <button className="block w-full py-4 rounded-xl border border-white/20 hover:bg-white/10 text-center text-white font-bold transition-all">
-              Select Growth
-            </button>
+              <ul className="space-y-3 mb-8 flex-grow">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Email support (24-48hr response)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Monthly updates & maintenance</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Security patches</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">1 small content update/month</span>
+                </li>
+              </ul>
+
+              <button className="w-full py-3 bg-white/10 hover:bg-kc-accent text-white font-bold rounded-xl transition-all">
+                Subscribe Now
+              </button>
+            </div>
+
+            {/* SUPPORT PLAN 2 */}
+            <div className="p-8 rounded-3xl bg-gradient-to-b from-kc-accent/20 to-transparent border border-kc-accent hover:border-kc-accent transition-all flex flex-col relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-kc-accent text-white text-xs font-bold rounded-full">
+                RECOMMENDED
+              </div>
+
+              <h3 className="text-2xl font-black text-white mb-2">Premium Support</h3>
+              <p className="text-kc-muted text-sm mb-6">Everything + priority support & features</p>
+              
+              <div className="mb-8">
+                <div className="text-3xl font-black text-kc-accent mb-2">$699<span className="text-sm font-normal text-kc-muted">/month</span></div>
+              </div>
+
+              <ul className="space-y-3 mb-8 flex-grow">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Everything in Basic Support, plus:</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Priority support (same business day)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Bi-weekly strategy calls</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">Unlimited content updates</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-kc-accent flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-kc-muted">A/B testing & analytics reports</span>
+                </li>
+              </ul>
+
+              <button className="w-full py-3 bg-kc-accent hover:bg-orange-600 text-white font-bold rounded-xl transition-all">
+                Subscribe Now
+              </button>
+            </div>
           </div>
+        )}
+
+        {/* CTA */}
+        <div className="text-center">
+          <p className="text-kc-muted text-sm mb-4">Not sure which is right for you?</p>
+          <a href="/contact" className="inline-flex items-center gap-2 text-kc-accent font-bold hover:text-orange-600 transition-colors">
+            Schedule a free consultation <ArrowRight className="w-4 h-4" />
+          </a>
         </div>
       </div>
     </section>
