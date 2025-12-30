@@ -5,7 +5,7 @@ import Features from "@/components/sections/Features";
 import About from "@/components/sections/About";
 import Pricing from "@/components/sections/Pricing"; 
 import Navbar from "@/components/ui/Navbar";
-import SalesBot from "@/components/ui/SalesBot";
+import Robot from "@/components/ui/Robot";
 
 export default function Home() {
   return (
@@ -30,7 +30,7 @@ export default function Home() {
       {/* 6. OFFER */}
       <Pricing />
 
-      <SalesBot />
+      <Robot />
     </main>
   );
 }
