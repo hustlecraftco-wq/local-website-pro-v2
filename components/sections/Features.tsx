@@ -26,13 +26,13 @@ export default function Features() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <p className="text-kc-muted text-sm leading-relaxed">
-                Google doesn't read pictures; it reads code. We inject <strong>JSON-LD Schema</strong> directly into the root layout. This tells search engines exactly who you are, where you service, and that you are Veteran Owned.
+                Google doesn't read pictures; it reads code. We inject <strong>JSON-LD Schema</strong> directly into the root layout. This tells search engines exactly who you are, where you service, and what you do.
               </p>
               {/* THE CODE VISUAL */}
               <div className="bg-black/50 rounded-lg p-4 font-mono text-xs text-blue-300 border border-white/5 shadow-inner">
                 <p><span className="text-purple-400">"type"</span>: <span className="text-green-400">"LocalBusiness"</span>,</p>
                 <p><span className="text-purple-400">"name"</span>: <span className="text-green-400">"Your Business"</span>,</p>
-                <p><span className="text-purple-400">"founder"</span>: <span className="text-green-400">"Veteran Owned"</span>,</p>
+                <p><span className="text-purple-400">"service"</span>: <span className="text-green-400">"Roofing, etc"</span>,</p>
                 <p><span className="text-purple-400">"areaServed"</span>: <span className="text-yellow-400">["KC", "Overland Park"]</span></p>
               </div>
             </div>
