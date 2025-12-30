@@ -1,12 +1,11 @@
-"use client";
+"use client"; 
 
 import { useState, useRef, useEffect, memo } from "react";
-import { MessageSquare, X, Send, Bot, MinusCircle } from "lucide-react";
+import { MessageSquare, X, Send, Bot, MinusCircle, MoreHorizontal } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Spline from '@splinetool/react-spline';
 
-// --- MEMOIZED ROBOT (Isolates 3D Scene) ---
-// This ensures the robot component itself is stable and doesn't re-render unnecessarily
+// --- 1. MEMOIZED ROBOT (Visual Only) ---
 const RobotScene = memo(function RobotScene() {
   return (
     <div className="w-full h-full pointer-events-none md:pointer-events-auto">
@@ -23,8 +22,10 @@ type Message = {
 export default function SalesBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [showRobot, setShowRobot] = useState(true);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false); 
   const [showBubble, setShowBubble] = useState(false);
+  const [showTrigger, setShowTrigger] = useState(false);
+  
   const [messages, setMessages] = useState<Message[]>([
     { role: "bot", text: "Yo. I'm The Foreman. I run the digital job site here. You looking to build something, or just kicking tires?" }
   ]);
@@ -38,16 +39,22 @@ export default function SalesBot() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Bubble Timer
+  // Sequence: Show Welcome -> Wait 3s -> Hide Welcome -> Show "..."
   useEffect(() => {
-    if (isLoaded && showRobot) {
+    if (isLoaded && showRobot && !isOpen) {  
         setShowBubble(true);
-        const hideTimer = setTimeout(() => setShowBubble(false), 3000);
+        const hideTimer = setTimeout(() => {
+            setShowBubble(false);
+            setShowTrigger(true);
+        }, 3000); 
         return () => clearTimeout(hideTimer);
+    } else if (isOpen) {
+      // Reset when chat opens
+      setShowBubble(false);
+      setShowTrigger(false);
     }
-  }, [isLoaded, showRobot]);
+  }, [isLoaded, showRobot, isOpen]);
 
-  // Scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -56,7 +63,7 @@ export default function SalesBot() {
 
   const handleDismissRobot = (e: any) => {
     e.stopPropagation();
-    setShowRobot(false);
+    setShowRobot(false); 
   };
 
   const handleSend = async () => {
@@ -81,12 +88,18 @@ export default function SalesBot() {
     <>
       <div className="fixed bottom-0 right-0 z-50 flex flex-col items-end pointer-events-none">
 
-        {/* --- ROBOT CONTAINER (STRICTLY CONDITIONED) --- */}
+        {/* --- ROBOT CONTAINER --- */}
         {showRobot && isLoaded && !isOpen && (
-            <div className="relative pointer-events-auto fade-in-simple">
-
+            <motion.div 
+              className="relative pointer-events-auto"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+            >
+              
               {/* DISMISS BUTTON */}
-              <button
+              <button 
                 onClick={handleDismissRobot}
                 className="absolute top-[20%] right-[10%] z-40 bg-black/40 hover:bg-red-500 text-white p-1.5 rounded-full backdrop-blur-md border border-white/10 transition-colors"
                 title="Put robot away"
@@ -94,34 +107,54 @@ export default function SalesBot() {
                 <X className="w-3 h-3" />
               </button>
 
-              {/* SPEECH BUBBLE */}
-              <AnimatePresence>
+              {/* 1. WELCOME BUBBLE (Temporary) */}
+              <AnimatePresence mode="wait">
                 {showBubble && (
-                    <motion.div
+                    <motion.div 
+                        key="welcome-bubble"
                         initial={{ opacity: 0, y: 10, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.9 }}
-                        onClick={() => setIsOpen(true)}
-                        className="cursor-pointer absolute top-[10%] right-[15%] bg-white text-black px-4 py-3 rounded-xl rounded-br-none shadow-xl text-xs font-bold whitespace-nowrap origin-bottom-right z-40 max-w-[200px] md:max-w-none whitespace-normal text-center md:text-left"
+                        className="absolute top-[10%] right-[15%] bg-white text-black px-4 py-3 rounded-xl rounded-br-none shadow-xl text-xs font-bold whitespace-nowrap origin-bottom-right z-40 pointer-events-none"
                     >
-                        Welcome in! Click if you have any questions!
+                        Welcome in! Click the dots if you need me!
                     </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* THE 3D SCENE */}
-              <div
-                onClick={() => setIsOpen(true)}
-                className="w-[250px] h-[250px] md:w-[600px] md:h-[600px] cursor-pointer relative z-30"
-              >
+              {/* 2. THE "..." TRIGGER BUTTON (Permanent after Welcome) */}
+              <AnimatePresence mode="wait">
+                {showTrigger && !showBubble && (
+                    <motion.button
+                        key="trigger-button"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setIsOpen(true)}
+                        className="absolute top-[10%] right-[15%] bg-white text-black p-3 rounded-full shadow-xl z-50 hover:bg-kc-accent hover:text-white transition-colors border border-black/10"
+                    >
+                        <MoreHorizontal className="w-5 h-5" />
+                    </motion.button>
+                )}
+              </AnimatePresence>
+
+              {/* THE 3D SCENE (Visual Only - No Click Handler) */}
+              <div className="w-[250px] h-[250px] md:w-[600px] md:h-[600px] relative z-30">
                  <RobotScene />
               </div>
-            </div>
+            </motion.div>
         )}
 
         {/* --- FALLBACK BLOB --- */}
         {(!showRobot || !isLoaded) && !isOpen && (
-          <div className="fixed bottom-6 right-6 pointer-events-auto">
+          <motion.div 
+            className="fixed bottom-6 right-6 pointer-events-auto"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+          >
             <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -131,14 +164,14 @@ export default function SalesBot() {
                 <MessageSquare className="w-6 h-6 fill-current" />
                 <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#050505]"></span>
             </motion.button>
-          </div>
+          </motion.div>
         )}
 
         {/* --- CHAT WINDOW --- */}
         <AnimatePresence>
           {isOpen && (
             <div className="fixed bottom-6 right-6 z-50 pointer-events-auto">
-                <motion.div
+                <motion.div 
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -185,11 +218,11 @@ export default function SalesBot() {
 
                 <div className="p-4 bg-white/5 border-t border-white/5">
                     <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex gap-2">
-                    <input
-                        type="text"
+                    <input 
+                        type="text" 
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Ask about pricing..."
+                        placeholder="Ask about pricing..." 
                         className="flex-1 bg-[#050505] border border-white/10 rounded-xl px-4 py-2 text-white text-sm focus:border-kc-accent focus:outline-none transition-colors"
                     />
                     <button type="submit" className="p-2 bg-white/10 rounded-xl hover:bg-kc-accent hover:text-white transition-colors text-kc-muted">
