@@ -55,26 +55,17 @@ export default function SalesBot() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
-
-    // Add User Message
     const userMsg = input;
     setMessages(prev => [...prev, { role: "user", text: userMsg }]);
     setInput("");
     setIsTyping(true);
 
-    // AI Response (Simulated)
     setTimeout(() => {
       let botResponse = "I'm just a demo bot right now, but soon I'll be hooked up to GPT-4 to sell for you.";
-      
       const lowerInput = userMsg.toLowerCase();
-      if (lowerInput.includes("price") || lowerInput.includes("cost") || lowerInput.includes("much")) {
-        botResponse = "Straight to business. $3,000 for the 'Asset'. One time fee. You own the code. No monthly rent. Want to see what's included?";
-      } else if (lowerInput.includes("hello") || lowerInput.includes("hi")) {
-        botResponse = "What's up? Ready to stop renting your website?";
-      } else if (lowerInput.includes("tracking") || lowerInput.includes("seo")) {
-        botResponse = "We track everything. Calls, clicks, revenue. If it doesn't make dollars, it doesn't make sense.";
+      if (lowerInput.includes("price") || lowerInput.includes("cost")) {
+        botResponse = "Straight to business. $3,000 for the 'Asset'. One time fee.";
       }
-
       setMessages(prev => [...prev, { role: "bot", text: botResponse }]);
       setIsTyping(false);
     }, 1000);
@@ -85,14 +76,10 @@ export default function SalesBot() {
       <div className="fixed bottom-0 right-0 z-50 flex flex-col items-end pointer-events-none">
 
         {/* --- ROBOT CONTAINER --- */}
-        <AnimatePresence>
-          {showRobot && isLoaded && !isOpen && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20, scale: 0.8 }} 
-              animate={{ opacity: 1, y: 0, scale: 1 }} 
-              exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-              className="relative group pointer-events-auto"
-            >
+        {/* We removed <AnimatePresence> and <motion.div> here to prevent the 'Ghost' duplicate glitch */}
+        {showRobot && isLoaded && !isOpen && (
+            <div className="relative group pointer-events-auto fade-in-simple">
+              
               {/* Dismiss Button */}
               <button 
                 onClick={handleDismissRobot}
@@ -102,7 +89,7 @@ export default function SalesBot() {
                 <X className="w-3 h-3" />
               </button>
 
-              {/* SPEECH BUBBLE */}
+              {/* SPEECH BUBBLE (We keep animation here because it's just text) */}
               <AnimatePresence>
                 {showBubble && (
                     <motion.div 
@@ -117,20 +104,20 @@ export default function SalesBot() {
                 )}
               </AnimatePresence>
 
-              {/* THE 3D SCENE 
-                  FIX: Removed 'hover:scale-105 transition-transform' to stop the duplicate ghosting glitch.
-              */}
+              {/* THE 3D SCENE */}
               <div 
                 onClick={() => setIsOpen(true)}
                 className="w-[250px] h-[250px] md:w-[600px] md:h-[600px] cursor-pointer relative z-30"
               >
+                {/* MOBILE FIX: 'pointer-events-none' (Mobile) prevents touch scrolling issues.
+                   DESKTOP FIX: 'md:pointer-events-auto' allows mouse tracking.
+                */}
                 <div className="w-full h-full pointer-events-none md:pointer-events-auto">
                    <Spline scene="https://prod.spline.design/7u1sFSqNjkJO1NtH/scene.splinecode" />
                 </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+        )}
 
         {/* --- FALLBACK BLOB --- */}
         {(!showRobot || !isLoaded) && !isOpen && (
