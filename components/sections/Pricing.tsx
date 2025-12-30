@@ -47,8 +47,8 @@ export default function Pricing() {
       
       {/* 3D ANIMATION BACKGROUND - Lazy Loaded */}
       {isInView && (
-        <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
-          <div className="w-full h-full">
+        <div className="absolute inset-0 z-0 opacity-40 pointer-events-none md:opacity-40 opacity-20">
+          <div className="w-full h-full scale-150 md:scale-100 md:translate-y-0 translate-y-32">
             <AnimationScene />
           </div>
         </div>
