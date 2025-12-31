@@ -1,364 +1,467 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Activity, Phone, ArrowRight, Eye, EyeOff, Target, Anchor, Settings, ShieldCheck, MapPin, AlertCircle } from "lucide-react";
+import React, { useRef, useState, useEffect, useMemo, Suspense } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
+import Lenis from "lenis";
+import { 
+  ArrowRight, Activity, Droplet, Target, Eye, EyeOff, Menu, X, Anchor, 
+  Waves, Microscope, Construction, ShieldCheck, AlertTriangle, Phone 
+} from "lucide-react";
 
-// --- CUSTOM ICONS ---
-type IconProps = React.SVGProps<SVGSVGElement>;
+// --- 1. THE 4K REALISTIC WATER SHADER ---
+// Uses Fresnel equations to simulate reflection/refraction and deep light absorption.
 
-const ValveIcon = (props: IconProps) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 12l4 4" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 12v-9" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 12l-4 4" /></svg>;
+const vertexShader = `
+  uniform float uTime;
+  uniform vec2 uMouse;
+  varying vec2 vUv;
+  varying float vElevation;
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
 
-// --- METRICS ---
-const SYSTEM_METRICS = {
-   pressure: "62 PSI",
-   flowRate: "NORMAL",
-   activeUnits: 5,
-   compliance: "IPC/UPC"
+  // Simplex noise function (simplified for performance)
+  vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+  float snoise(vec2 v){
+    const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+             -0.577350269189626, 0.024390243902439);
+    vec2 i  = floor(v + dot(v, C.yy) );
+    vec2 x0 = v -   i + dot(i, C.xx);
+    vec2 i1;
+    i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec4 x12 = x0.xyxy + C.xxzz;
+    x12.xy -= i1;
+    i = mod(i, 289.0);
+    vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+    + i.x + vec3(0.0, i1.x, 1.0 ));
+    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+    m = m*m ;
+    m = m*m ;
+    vec3 x = 2.0 * fract(p * C.www) - 1.0;
+    vec3 h = abs(x) - 0.5;
+    vec3 ox = floor(x + 0.5);
+    vec3 a0 = x - ox;
+    m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+    vec3 g;
+    g.x  = a0.x  * x0.x  + h.x  * x0.y;
+    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    return 130.0 * dot(m, g);
+  }
+
+  void main() {
+    vUv = uv;
+    vec3 pos = position;
+
+    // Deep Swell (Low Frequency)
+    float bigWave = sin(pos.x * 0.5 + uTime * 0.2) * sin(pos.y * 0.3 + uTime * 0.1) * 1.5;
+    
+    // Surface Chop (High Frequency Noise)
+    float smallWave = snoise(pos.xy * 2.0 + uTime * 0.5) * 0.4;
+    
+    // Mouse Interactive Ripple
+    float dist = distance(uv, uMouse);
+    float ripple = smoothstep(0.4, 0.0, dist) * sin(dist * 25.0 - uTime * 8.0) * 0.8;
+
+    pos.z += bigWave + smallWave + ripple;
+    vElevation = pos.z;
+
+    // Recalculate normal for lighting (Mocked for performance)
+    vec3 objectNormal = normalize(vec3(-smallWave, -bigWave, 1.0));
+    vNormal = normalMatrix * objectNormal;
+    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+    vViewPosition = -mvPosition.xyz;
+
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const fragmentShader = `
+  uniform vec3 uColorDeep;
+  uniform vec3 uColorSurface;
+  uniform vec3 uColorHighlight;
+  varying float vElevation;
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+
+  void main() {
+    // 1. Fresnel Effect (Grazing Angle Reflection)
+    vec3 viewDir = normalize(vViewPosition);
+    vec3 normal = normalize(vNormal);
+    float fresnel = dot(viewDir, normal);
+    fresnel = clamp(1.0 - fresnel, 0.0, 1.0);
+    fresnel = pow(fresnel, 3.0); // Sharpen the reflection curve
+
+    // 2. Color Mixing based on height
+    float mixStrength = (vElevation + 1.0) * 0.5;
+    vec3 baseColor = mix(uColorDeep, uColorSurface, mixStrength);
+
+    // 3. Specular Highlight (The "Glossy" Look)
+    vec3 lightDir = normalize(vec3(1.0, 1.0, 2.0));
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+    vec3 highlight = uColorHighlight * spec * 0.8;
+
+    // Combine
+    vec3 finalColor = baseColor + (fresnel * 0.4) + highlight;
+
+    gl_FragColor = vec4(finalColor, 1.0);
+  }
+`;
+
+// --- 3D SCENE CONFIG ---
+const FluidScene = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const { mouse } = useThree();
+  
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+    uColorDeep: { value: new THREE.Color("#020408") },      // Abyssal Black
+    uColorSurface: { value: new THREE.Color("#0f1f38") },   // Deep Industrial Navy
+    uColorHighlight: { value: new THREE.Color("#4fa3c7") }  // Cyan Specular Hit
+  }), []);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.material.uniforms.uTime.value = state.clock.getElapsedTime();
+      // Mouse interaction smoothing
+      const targetX = (state.pointer.x + 1) / 2;
+      const targetY = (state.pointer.y + 1) / 2;
+      meshRef.current.material.uniforms.uMouse.value.x += (targetX - meshRef.current.material.uniforms.uMouse.value.x) * 0.05;
+      meshRef.current.material.uniforms.uMouse.value.y += (targetY - meshRef.current.material.uniforms.uMouse.value.y) * 0.05;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} rotation={[-Math.PI / 2.5, 0, 0]} position={[0, -3, -8]}>
+      {/* High-Res Plane for 4K Look */}
+      <planeGeometry args={[40, 40, 256, 256]} /> 
+      <shaderMaterial
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+        uniforms={uniforms}
+        transparent={true}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  );
 };
 
-export default function PlumberOpsV6() {
+// --- UI COMPONENTS ---
+
+const MagneticButton = ({ children, className = "", onClick }: any) => {
+  const ref = useRef<HTMLButtonElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouse = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    const { height, width, left, top } = ref.current!.getBoundingClientRect();
+    const middleX = clientX - (left + width / 2);
+    const middleY = clientY - (top + height / 2);
+    setPosition({ x: middleX * 0.2, y: middleY * 0.2 });
+  };
+
+  const reset = () => setPosition({ x: 0, y: 0 });
+
+  return (
+    <motion.button
+      ref={ref}
+      onMouseMove={handleMouse}
+      onMouseLeave={reset}
+      onClick={onClick}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: "spring", stiffness: 150, damping: 15 }}
+      className={`relative overflow-hidden group ${className}`}
+    >
+      <span className="relative z-10">{children}</span>
+      <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+    </motion.button>
+  );
+};
+
+// --- MAIN APPLICATION ---
+
+export default function PlumberOpsV8() {
   const [salesMode, setSalesMode] = useState(false);
 
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.5, // Heavier, more "fluid" feel
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+  }, []);
+
   return (
-    <main className="min-h-screen bg-[#0B1121] text-slate-300 font-sans relative overflow-x-hidden selection:bg-orange-500/30 selection:text-orange-200">
+    <div className="relative w-full min-h-screen bg-[#020408] text-slate-200 overflow-hidden selection:bg-orange-500/30">
+      
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
         .font-display { font-family: 'Space Grotesk', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        @keyframes flow {
-           from { stroke-dashoffset: 20; }
-           to { stroke-dashoffset: 0; }
-        }
-        .animate-flow {
-           animation: flow 1s linear infinite;
-        }
+        .text-stroke { -webkit-text-stroke: 1px rgba(255,255,255,0.1); color: transparent; }
       `}</style>
 
+      {/* LAYER 1: THE DEEP WATER CANVAS */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {/* FOV 25 = Cinematic/Wide View */}
+        <Canvas camera={{ position: [0, 2, 5], fov: 25 }}>
+          <Suspense fallback={null}>
+            <FluidScene />
+            <fog attach="fog" args={['#020408', 5, 25]} />
+          </Suspense>
+        </Canvas>
+      </div>
+
       {/* SALES TOGGLE */}
-      <div className="fixed bottom-6 left-6 z-[60]">
-        <button 
+      <div className="fixed bottom-8 left-8 z-[60]">
+        <MagneticButton 
           onClick={() => setSalesMode(!salesMode)}
-          className={`flex items-center gap-2 px-4 py-3 rounded-none border-l-4 font-bold shadow-2xl transition-all hover:translate-x-1 ${salesMode ? 'bg-orange-600 text-white border-white' : 'bg-[#151e32] text-slate-400 border-orange-500'}`}
+          className={`flex items-center gap-3 px-6 py-4 rounded-full border backdrop-blur-md transition-all ${salesMode ? 'bg-orange-600 border-orange-500 text-white' : 'bg-white/5 border-white/10 text-slate-400'}`}
         >
-           {salesMode ? <Eye className="w-5 h-5"/> : <EyeOff className="w-5 h-5" />}
-           <span className="font-display uppercase tracking-widest text-xs">{salesMode ? "REVENUE X-RAY: ON" : "CLIENT VIEW"}</span>
-        </button>
+           <div className="flex items-center gap-2">
+             {salesMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+             <span className="font-mono text-xs tracking-widest uppercase">{salesMode ? "REV X-RAY: ON" : "CLIENT VIEW"}</span>
+           </div>
+        </MagneticButton>
       </div>
 
-      <IndustrialStatusBar metrics={SYSTEM_METRICS} />
-      <NavHeader />
+      {/* LAYER 2: INTERFACE */}
+      <div className="relative z-10">
+        
+        {/* NAV */}
+        <nav className="fixed top-0 w-full p-6 md:p-10 flex justify-between items-center z-50 mix-blend-difference text-white">
+           <div className="flex flex-col">
+              <span className="font-display font-bold text-3xl tracking-tighter">CORE<span className="text-orange-500">FLOW</span></span>
+              <span className="font-mono text-[10px] tracking-widest opacity-70">HYDRAULIC PROTECTION</span>
+           </div>
+           <MagneticButton className="hidden md:flex items-center gap-2 px-6 py-3 border border-white/40 rounded-full font-mono text-xs uppercase hover:bg-white hover:text-black transition-colors">
+              <Phone className="w-4 h-4" /> Priority Dispatch
+           </MagneticButton>
+        </nav>
 
-      <div className="relative">
-         <HeroSection />
-         {salesMode && (
-            <SalesHotspot 
-               top="35%" 
-               right="10%" 
-               title="Dispatch Psychology"
-               text="We swapped 'Contact Us' for 'Dispatch Unit'. This shifts the homeowner from 'Shopper' to 'Commander', increasing urgency and click-through rate."
-               color="orange"
-            />
-         )}
-      </div>
+        {/* HERO */}
+        <section className="min-h-[110vh] flex flex-col justify-center px-6 md:px-12 relative">
+           
+           <div className="max-w-5xl">
+              <motion.div 
+                 initial={{ opacity: 0, y: 20 }} 
+                 animate={{ opacity: 1, y: 0 }} 
+                 transition={{ duration: 1 }}
+                 className="inline-flex items-center gap-2 px-3 py-1 border border-white/10 rounded-full bg-white/5 backdrop-blur-sm mb-8"
+              >
+                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                 <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-widest">System Status: Nominal</span>
+              </motion.div>
 
-      <div className="relative">
-         <ServicesGrid />
-          {salesMode && (
-            <SalesHotspot 
-               top="15%" 
-               left="5%" 
-               title="Price Anchoring"
-               text="Tags like 'Avoids Excavation' justify higher prices. Customers will pay 30% more to avoid digging up their lawn."
-               align="left"
-            />
-         )}
-      </div>
+              <h1 className="text-[12vw] leading-[0.85] font-display font-bold text-white mb-8 mix-blend-overlay opacity-90">
+                 PREVENT<br/>FAILURE.
+              </h1>
 
-      <DiagnosticTech />
-      
-      <Footer />
+              <div className="grid md:grid-cols-2 gap-12 items-end">
+                 <p className="text-lg md:text-xl text-slate-400 font-light leading-relaxed max-w-md">
+                    We engineer solutions for unseen infrastructure. 
+                    <span className="text-white font-medium"> Non-destructive diagnostics.</span> Municipal compliance. Zero guesswork.
+                 </p>
 
-      {/* SALES PITCH OVERLAY */}
-      {salesMode && (
-         <div className="fixed top-24 right-6 w-96 z-50 animate-in slide-in-from-right duration-500">
-            <div className="bg-[#0f172a]/95 backdrop-blur-md border-l-4 border-orange-500 p-6 shadow-2xl text-slate-200">
-               <div className="flex items-center gap-2 mb-4 text-orange-500 font-display font-bold uppercase text-xs tracking-wider">
-                  <Target className="w-4 h-4" /> Market Analysis
-               </div>
-               <h3 className="text-xl font-display font-bold text-white mb-2">The "Invisible Risk" Strategy</h3>
-               <p className="text-sm text-slate-400 mb-6 leading-relaxed">
-                  Homeowners fear what they can't see. This design uses "Diagnostic" language to visualize the problem, justifying the high-ticket "Cure."
-               </p>
-               <div className="space-y-3">
-                  <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                     <span className="text-xs text-slate-500 uppercase">Emergency Capture</span>
-                     <span className="text-emerald-400 font-mono text-xs">+45%</span>
+                 {/* Live Telemetry Card */}
+                 <div className="w-full bg-[#05070a]/80 backdrop-blur-xl border-t border-l border-white/10 p-8 rounded-tr-3xl">
+                    <div className="flex items-center justify-between mb-6 text-orange-500 font-mono text-xs uppercase">
+                       <span className="flex items-center gap-2"><Activity className="w-4 h-4" /> Live Sensor Feed</span>
+                       <span className="animate-pulse">● REC</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-8">
+                       <div>
+                          <div className="text-[10px] text-slate-500 font-mono mb-1">PRESSURE</div>
+                          <div className="text-3xl font-display text-white">62<span className="text-sm text-slate-600">PSI</span></div>
+                       </div>
+                       <div>
+                          <div className="text-[10px] text-slate-500 font-mono mb-1">FLOW</div>
+                          <div className="text-3xl font-display text-white">14<span className="text-sm text-slate-600">GPM</span></div>
+                       </div>
+                       <div>
+                          <div className="text-[10px] text-slate-500 font-mono mb-1">INTEGRITY</div>
+                          <div className="text-3xl font-display text-emerald-500">100%</div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+
+           {/* Hero Sales Hotspot */}
+           {salesMode && (
+              <div className="absolute top-[30%] right-[10%] w-72 pointer-events-none">
+                 <div className="relative">
+                    <div className="absolute -left-4 top-0 w-1 h-full bg-orange-500"></div>
+                    <h4 className="font-mono text-xs text-orange-500 font-bold mb-2">THE "FEAR" HOOK</h4>
+                    <p className="font-display text-sm text-slate-300">
+                       "Prevent Failure" hits harder than "Need a Plumber?". We target the homeowner's anxiety about hidden water damage to drive high-ticket inspections.
+                    </p>
+                 </div>
+              </div>
+           )}
+        </section>
+
+        {/* EDITORIAL GRID */}
+        <section className="min-h-screen bg-[#020408] relative z-20 py-32 px-6 md:px-12 border-t border-white/5">
+           <div className="grid grid-cols-1 md:grid-cols-12 gap-y-32 gap-x-12">
+              
+              {/* Text Block */}
+              <div className="md:col-span-5 md:col-start-2 sticky top-32 h-fit">
+                 <span className="font-mono text-xs text-blue-500 mb-6 block">/// CAPABILITIES</span>
+                 <h2 className="text-5xl md:text-7xl font-display font-bold leading-tight mb-8">
+                    SURGICAL<br/>PRECISION.
+                 </h2>
+                 <p className="text-slate-400 leading-relaxed mb-12">
+                    Traditional plumbing is destructive. We use hydro-physics and robotics to rehabilitate pipes without destroying your property.
+                 </p>
+                 <MagneticButton className="px-8 py-4 bg-white text-black font-display font-bold text-sm uppercase tracking-wide hover:bg-slate-200">
+                    See Technology
+                 </MagneticButton>
+              </div>
+
+              {/* Service Cards (Parallax Flow) */}
+              <div className="md:col-span-6">
+                 {[
+                    { 
+                       title: "Trenchless Rehab", 
+                       desc: "Epoxy liner insertion. Zero digging.", 
+                       tag: "NO EXCAVATION",
+                       icon: Waves 
+                    },
+                    { 
+                       title: "Hydro-Jetting", 
+                       desc: "4000 PSI industrial descaling.", 
+                       tag: "FACTORY RESET",
+                       icon: Droplet 
+                    },
+                    { 
+                       title: "Endoscopy", 
+                       desc: "4K internal diagnostic imaging.", 
+                       tag: "INSURANCE VERIFIED",
+                       icon: Microscope 
+                    },
+                    { 
+                       title: "Municipal Tie-In", 
+                       desc: "Code compliant main line fusion.", 
+                       tag: "IPC COMPLIANT",
+                       icon: Construction 
+                    }
+                 ].map((s, i) => (
+                    <div key={i} className="group relative mb-8 p-8 border border-white/10 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.05] transition-all duration-500">
+                       <div className="flex justify-between items-start mb-6">
+                          <s.icon className="w-8 h-8 text-slate-600 group-hover:text-blue-500 transition-colors" />
+                          <span className="font-mono text-[10px] border border-white/20 px-2 py-1 rounded text-slate-400">{s.tag}</span>
+                       </div>
+                       <h3 className="text-3xl font-display font-bold mb-4">{s.title}</h3>
+                       <p className="text-sm text-slate-400 font-light">{s.desc}</p>
+                       <div className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:-rotate-45 duration-300">
+                          <ArrowRight className="w-6 h-6 text-orange-500" />
+                       </div>
+                    </div>
+                 ))}
+              </div>
+
+           </div>
+
+           {/* Services Sales Hotspot */}
+           {salesMode && (
+              <div className="fixed bottom-12 right-12 w-80 bg-[#0f172a] border border-orange-500 p-6 z-50 animate-in slide-in-from-right shadow-2xl">
+                 <div className="flex items-center gap-2 mb-4 text-orange-500 font-mono text-xs font-bold uppercase">
+                    <Target className="w-4 h-4" /> Price Anchoring
+                 </div>
+                 <div className="space-y-4">
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                       Tags like "No Excavation" justify a 30% premium. We frame the service as "Property Protection" rather than just pipe repair.
+                    </p>
+                    <div className="flex justify-between text-xs font-mono border-t border-slate-700 pt-2">
+                       <span className="text-slate-500">AVG TICKET</span>
+                       <span className="text-emerald-400">$12,500</span>
+                    </div>
+                 </div>
+              </div>
+           )}
+        </section>
+
+        {/* DIAGNOSTIC TECH SECTION */}
+        <section className="py-32 px-6 md:px-12 bg-[#05070a] border-t border-white/5 relative overflow-hidden">
+            <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-24 items-center">
+               
+               {/* Tech Visual */}
+               <div className="relative aspect-video bg-black border border-slate-800 rounded-sm overflow-hidden group">
+                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1518331307255-b46765727196?q=80&w=2670&auto=format&fit=crop')] bg-cover opacity-30 grayscale group-hover:grayscale-0 transition-all duration-700 mix-blend-screen"></div>
+                  
+                  {/* Camera UI Overlay */}
+                  <div className="absolute inset-0 p-6 flex flex-col justify-between">
+                     <div className="flex justify-between text-green-500 font-mono text-xs">
+                        <span className="animate-pulse">● LIVE FEED</span>
+                        <span>CAM-04</span>
+                     </div>
+                     
+                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-white/20 rounded-full flex items-center justify-center">
+                        <div className="w-1 h-4 bg-green-500/50"></div>
+                        <div className="h-1 w-4 bg-green-500/50 absolute"></div>
+                     </div>
+
+                     <div className="flex justify-between text-white font-mono text-xs">
+                        <div>
+                           <div className="text-slate-500 text-[10px]">DEPTH</div>
+                           <div>-4.2 FT</div>
+                        </div>
+                        <div className="text-right">
+                           <div className="text-slate-500 text-[10px]">GRADE</div>
+                           <div>-2.1%</div>
+                        </div>
+                     </div>
                   </div>
-                  <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                     <span className="text-xs text-slate-500 uppercase">High-Ticket Filter</span>
-                     <span className="text-emerald-400 font-mono text-xs">ACTIVE</span>
-                  </div>
                </div>
+
+               {/* Copy */}
+               <div>
+                  <h2 className="text-4xl md:text-5xl font-display font-bold mb-8">
+                     Visual Verification.
+                  </h2>
+                  <p className="text-slate-400 leading-relaxed mb-8">
+                     We don't guess. We verify. Our endoscopic cameras generate a 4K map of your infrastructure, identifying root intrusion and fractures with millimeter precision.
+                  </p>
+                  <ul className="space-y-4 font-mono text-xs text-slate-300">
+                     <li className="flex items-center gap-3">
+                        <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                        Insurance-Ready Documentation
+                     </li>
+                     <li className="flex items-center gap-3">
+                        <AlertTriangle className="w-4 h-4 text-orange-500" />
+                        Early Failure Detection
+                     </li>
+                  </ul>
+               </div>
+
             </div>
-         </div>
-      )}
-    </main>
-  );
-}
+        </section>
 
-// --- COMPONENTS ---
+        {/* FOOTER */}
+        <footer className="py-12 px-6 md:px-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-end bg-[#020408]">
+           <div>
+              <span className="font-display font-bold text-2xl tracking-tighter block mb-2">COREFLOW</span>
+              <p className="font-mono text-[10px] text-slate-600">
+                 ENGINEERING DIVISION<br/>
+                 EST. 2025
+              </p>
+           </div>
+           <div className="text-right mt-8 md:mt-0">
+              <MagneticButton className="px-6 py-3 border border-white/20 rounded-full font-mono text-xs uppercase hover:bg-white hover:text-black transition-colors">
+                 Technician Login
+              </MagneticButton>
+           </div>
+        </footer>
 
-function IndustrialStatusBar({ metrics }: any) {
-  return (
-    <div className="bg-[#080c19] border-b border-slate-800 text-[10px] font-mono py-2 px-6 flex justify-between items-center text-slate-500">
-      <div className="flex gap-8 items-center">
-        <span className="flex items-center gap-2 text-emerald-500">
-           <span className="w-2 h-2 bg-emerald-600 rounded-sm"></span>
-           SYSTEM STATUS: NOMINAL
-        </span>
-        <span className="hidden md:inline flex items-center gap-2">
-           <Activity className="w-3 h-3" /> MAIN PRESSURE: <span className="text-slate-300">{metrics.pressure}</span>
-        </span>
-        <span className="hidden md:inline flex items-center gap-2">
-           <ShieldCheck className="w-3 h-3" /> CODE: <span className="text-slate-300">{metrics.compliance}</span>
-        </span>
-      </div>
-      <div className="flex gap-6">
-         <span className="text-orange-500 font-bold uppercase tracking-wider flex items-center gap-2 animate-pulse">
-            <AlertCircle className="w-3 h-3" /> Priority Dispatch: Available
-         </span>
       </div>
     </div>
   );
-}
-
-function NavHeader() {
-  return (
-    <nav className="sticky top-0 w-full z-40 bg-[#0B1121]/90 backdrop-blur-md border-b border-slate-800">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-900 flex items-center justify-center text-white border border-blue-700 rounded-sm">
-               <Anchor className="w-6 h-6" />
-            </div>
-            <span className="font-display font-bold text-2xl tracking-tight text-white">CORE<span className="text-blue-500">FLOW</span></span>
-        </div>
-        
-        <div className="hidden md:flex gap-8 text-xs font-display font-bold text-slate-400 uppercase tracking-widest">
-           {['Residential', 'Commercial', 'Excavation', 'Diagnostics'].map(item => (
-              <a key={item} href="#" className="hover:text-blue-400 transition-colors border-b-2 border-transparent hover:border-blue-500 py-1">
-                 {item}
-              </a>
-           ))}
-        </div>
-
-        <button className="bg-orange-600 hover:bg-orange-500 text-white px-6 py-3 font-display font-bold text-sm uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg shadow-orange-900/20">
-          <Phone className="w-4 h-4" /> DISPATCH UNIT
-        </button>
-      </div>
-    </nav>
-  );
-}
-
-function HeroSection() {
-  return (
-    <section className="relative pt-24 pb-32 border-b border-slate-800 overflow-hidden">
-       {/* Background: Subtle Blueprint Grid */}
-       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20"></div>
-       
-       <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
-          <div className="space-y-8">
-             <div className="inline-flex items-center gap-3 px-4 py-2 bg-blue-900/20 border-l-2 border-blue-500 text-blue-400 text-xs font-mono uppercase">
-                <Settings className="w-3 h-3 animate-spin-slow" />
-                Subsurface Diagnostics & Repair
-             </div>
-             
-             {/* FEAR BASED HEADLINE */}
-             <h1 className="text-5xl md:text-7xl font-display font-bold text-white leading-[0.95]">
-                PREVENT <br/>
-                <span className="text-orange-500">CATASTROPHIC FAILURE.</span>
-             </h1>
-             
-             <p className="text-lg text-slate-400 leading-relaxed max-w-lg font-light">
-                We diagnose hidden infrastructure issues before they become insurance claims.
-                <span className="text-slate-300 font-medium"> Non-destructive. IPC Compliant. Municipal Grade.</span>
-             </p>
-
-             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <button className="bg-white text-slate-900 px-8 py-4 font-display font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors flex items-center gap-2">
-                   <AlertCircle className="w-4 h-4 text-orange-600" /> REQUEST PRIORITY DISPATCH
-                </button>
-                <button className="px-8 py-4 border border-slate-700 text-slate-400 font-mono text-sm uppercase hover:text-white hover:border-slate-500 transition-colors">
-                   View Service Map
-                </button>
-             </div>
-          </div>
-
-          {/* THE UNIQUE MECHANIC: LIVE FLOW ANIMATION */}
-          <div className="relative h-[420px] bg-[#0f1623] border border-slate-800 rounded-lg p-8 shadow-2xl">
-             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-transparent"></div>
-             
-             <div className="flex justify-between items-center mb-8">
-                <div className="text-xs font-mono text-slate-500 uppercase">System Schematic: Main Line</div>
-                <div className="flex items-center gap-2 text-emerald-500 text-xs font-mono">
-                   <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                   </span>
-                   FLOW: OPTIMAL
-                </div>
-             </div>
-
-             {/* The Schematic Visualization */}
-             <div className="relative h-56 w-full border border-slate-800 bg-[#0B1121] rounded flex items-center justify-center overflow-hidden">
-                {/* Static Pipes */}
-                <svg className="absolute inset-0 w-full h-full text-slate-700" fill="none" stroke="currentColor" strokeWidth="2">
-                   <path d="M0 100 H300 V50 H500" />
-                   {/* Cleanout access visual */}
-                   <line x1="150" y1="100" x2="150" y2="80" strokeDasharray="4 4" />
-                </svg>
-                
-                {/* ANIMATED FLOW */}
-                <svg className="absolute inset-0 w-full h-full text-blue-500" fill="none" stroke="currentColor" strokeWidth="2">
-                   <path className="animate-flow" strokeDasharray="10 20" d="M0 100 H300 V50 H500" />
-                </svg>
-
-                {/* Data Labels - Trade Specific */}
-                <div className="absolute bottom-10 left-10 bg-slate-900/90 px-2 py-1 border border-slate-700 text-[9px] font-mono text-slate-400">
-                   CITY MAIN CONNECTION
-                </div>
-                <div className="absolute top-12 right-10 bg-slate-900/90 px-2 py-1 border border-slate-700 text-[9px] font-mono text-slate-400">
-                   RESIDENTIAL INTAKE
-                </div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-2 bg-emerald-900/30 px-2 py-1 border border-emerald-500/30 text-[9px] font-mono text-emerald-400 rounded">
-                   ROOT INTRUSION: NEGATIVE
-                </div>
-             </div>
-
-             {/* Telemetry Footer */}
-             <div className="grid grid-cols-3 gap-4 mt-6">
-                <div className="text-center">
-                   <div className="text-[10px] text-slate-500 uppercase mb-1">Pressure</div>
-                   <div className="font-mono text-xl text-white">62 <span className="text-xs text-slate-600">PSI</span></div>
-                </div>
-                <div className="text-center border-l border-slate-800">
-                   <div className="text-[10px] text-slate-500 uppercase mb-1">Grade</div>
-                   <div className="font-mono text-xl text-white">-2.1 <span className="text-xs text-slate-600">%</span></div>
-                </div>
-                <div className="text-center border-l border-slate-800">
-                   <div className="text-[10px] text-slate-500 uppercase mb-1">Integrity</div>
-                   <div className="font-mono text-xl text-emerald-500">100%</div>
-                </div>
-             </div>
-          </div>
-       </div>
-    </section>
-  );
-}
-
-function ServicesGrid() {
-   const services = [
-      { title: "Trenchless Rehabilitation", desc: "Epoxy liner insertion.", code: "TR-01", tag: "NO DIGGING" },
-      { title: "Hydro-Excavation", desc: "Precision soil removal.", code: "HE-04", tag: "AVOIDS DAMAGE" },
-      { title: "Endoscopic Diagnostics", desc: "High-res pipe analysis.", code: "ED-02", tag: "INSURANCE VERIFIED" },
-      { title: "Backflow Prevention", desc: "Municipal compliance.", code: "BP-09", tag: "CODE REQUIRED" },
-   ];
-
-   return (
-      <section className="py-24 max-w-7xl mx-auto px-6 border-b border-slate-800 bg-[#0c1224]">
-         <div className="mb-12">
-            <h2 className="text-3xl font-display font-bold text-white mb-2">Technical Capabilities</h2>
-            <p className="text-slate-500 font-light">Residential & Light Industrial</p>
-         </div>
-
-         <div className="grid md:grid-cols-4 gap-px bg-slate-800 border border-slate-800">
-            {services.map((s, i) => (
-               <div key={i} className="bg-[#0B1121] p-8 group hover:bg-[#111a30] transition-colors relative">
-                  <div className="flex justify-between items-start mb-6">
-                     <div className="text-[10px] font-mono text-slate-600 group-hover:text-blue-500 transition-colors">{s.code}</div>
-                     <div className="px-2 py-0.5 bg-blue-900/20 text-blue-400 text-[9px] font-bold uppercase tracking-wider border border-blue-900/50 rounded-sm">
-                        {s.tag}
-                     </div>
-                  </div>
-                  <h3 className="text-lg font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">{s.title}</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">{s.desc}</p>
-                  <ArrowRight className="w-5 h-5 text-slate-700 absolute bottom-8 right-8 group-hover:text-blue-500 group-hover:-rotate-45 transition-all" />
-               </div>
-            ))}
-         </div>
-      </section>
-   )
-}
-
-function DiagnosticTech() {
-   return (
-      <section className="py-24 bg-[#0f172a] border-t border-slate-800">
-         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
-            <div>
-               <div className="text-orange-500 font-mono text-xs mb-4">AVOID CATASTROPHIC FAILURE</div>
-               <h2 className="text-4xl font-display font-bold text-white mb-6">See What Lies Beneath.</h2>
-               <p className="text-slate-400 mb-8 leading-relaxed">
-                  Most plumbers guess. We verify. Our endoscopic cameras provide 4K visual confirmation of your line's integrity.
-                  <span className="block mt-4 text-white font-medium">Live video feed available to homeowner during inspection.</span>
-               </p>
-               <ul className="space-y-4">
-                  {[
-                     "Real-time visual feed to your device",
-                     "Laser-measured distance to obstruction",
-                     "Slope & grade calculation"
-                  ].map((item, i) => (
-                     <li key={i} className="flex items-center gap-3 text-sm text-slate-300">
-                        <div className="w-1.5 h-1.5 bg-orange-500"></div>
-                        {item}
-                     </li>
-                  ))}
-               </ul>
-            </div>
-            
-            <div className="relative aspect-video bg-black border border-slate-700 rounded-sm overflow-hidden flex items-center justify-center group">
-               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542013936693-884638332954?q=80&w=2736&auto=format&fit=crop')] bg-cover opacity-30"></div>
-               <div className="absolute top-4 left-4 text-xs font-mono text-green-500">REC ● 00:14:22</div>
-               <div className="absolute bottom-4 left-4 text-xs font-mono text-white">DEPTH: 4.2FT</div>
-               <div className="absolute bottom-4 right-4 text-xs font-mono text-white">GRADE: -2.1%</div>
-               <div className="relative border border-green-500/30 w-16 h-16 rounded-full flex items-center justify-center">
-                  <div className="w-1 h-1 bg-green-500"></div>
-               </div>
-            </div>
-         </div>
-      </section>
-   )
-}
-
-function Footer() {
-   return (
-      <footer className="py-12 px-6 border-t border-slate-800 bg-[#080c19]">
-         <div className="max-w-7xl mx-auto flex justify-between items-center text-xs font-mono text-slate-600">
-            <div>SYSTEM: COREFLOW V6</div>
-            <div>© 2025 ENGINEERING DIVISION</div>
-         </div>
-      </footer>
-   )
-}
-
-function SalesHotspot({ top, left, right, bottom, title, text, align = 'right', color = 'blue' }: any) {
-   const colors: any = {
-      blue: { bg: 'bg-blue-600', border: 'border-blue-500', text: 'text-blue-400' },
-      orange: { bg: 'bg-orange-600', border: 'border-orange-500', text: 'text-orange-400' }
-   };
-   const theme = colors[color] || colors.blue;
-
-   return (
-      <div className="absolute z-50 pointer-events-none group" style={{ top, left, right, bottom }}>
-         <div className="relative">
-            <div className={`absolute -inset-2 rounded-full animate-ping opacity-20 ${theme.bg}`}></div>
-            <div className={`relative w-6 h-6 rounded-full border border-white flex items-center justify-center z-10 ${theme.bg}`}>
-               <span className="text-white font-bold text-sm">+</span>
-            </div>
-            <div className={`absolute top-0 w-72 bg-[#1e293b] border-l-2 ${theme.border} p-4 shadow-2xl animate-in fade-in zoom-in duration-300 ${align === 'left' ? 'right-[calc(100%+2rem)]' : 'left-[calc(100%+2rem)]'}`}>
-               <h4 className={`font-display font-bold text-xs uppercase tracking-wide mb-2 ${theme.text}`}>{title}</h4>
-               <p className="text-slate-300 text-xs leading-relaxed">{text}</p>
-            </div>
-         </div>
-      </div>
-   )
 }
