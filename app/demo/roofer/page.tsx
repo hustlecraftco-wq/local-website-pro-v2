@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Shield, Award, DollarSign, FileCheck, ChevronDown } from "lucide-react";
-
+import { ShieldIcon, AwardIcon, DollarSignIcon, FileCheckIcon, ChevronDownIcon } from "./icons";
 export default function RooferDemoPage() {
   return (
     <main className="min-h-screen bg-black text-white">
@@ -52,10 +51,10 @@ function HeroSection() {
 // --- TRUST SECTION ---
 function TrustSection() {
   const badges = [
-    { icon: Shield, label: "25-Year Warranty", color: "text-blue-400" },
-    { icon: Award, label: "GAF Master Elite", color: "text-yellow-400" },
-    { icon: DollarSign, label: "0% Financing Available", color: "text-emerald-400" },
-    { icon: FileCheck, label: "Free Hail Inspection", color: "text-orange-400" },
+    { icon: ShieldIcon, label: "25-Year Warranty", color: "text-blue-400" },
+    { icon: AwardIcon, label: "GAF Master Elite", color: "text-yellow-400" },
+    { icon: DollarSignIcon, label: "0% Financing Available", color: "text-emerald-400" },
+    { icon: FileCheckIcon, label: "Free Hail Inspection", color: "text-orange-400" },
   ];
 
   return (
@@ -249,7 +248,7 @@ function FAQSection() {
               className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-900 transition-colors"
             >
               <span className="font-semibold text-lg">{faq.q}</span>
-              <ChevronDown className={`w-5 h-5 transition-transform ${openIndex === i ? "rotate-180" : ""}`} />
+              <ChevronDownIcon className={`w-5 h-5 transition-transform ${openIndex === i ? "rotate-180" : ""}`} />
             </button>
             {openIndex === i && (
               <div className="px-6 py-4 bg-gray-900 text-gray-300 border-t border-gray-800">
