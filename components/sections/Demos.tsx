@@ -214,13 +214,24 @@ export default function Demos() {
         {/* DEMO GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {demos.map((demo, i) => (
-                  demo.title === "The High-Ticket Closer" ? (
-                    <Link key={i} href="/demo/roofer" className="block">
-                      <DemoCard demo={demo} />
-                    </Link>
-                  ) : (
-                    <DemoCard key={i} demo={demo} />
-                  )
+                  // Create URL based on industry
+                const industryToUrl: Record<string, string> = {
+                  "Plumbing & HVAC": "/demo/plumber",
+                  "Roofing & Exteriors": "/demo/roofer",
+                  "Landscaping & Hardscape": "/demo/landscaping",
+                  "Legal & Attorney": "/demo/lawyer",
+                  "Financial & CPA": "/demo/finance",
+                  "Medical & Dental": "/demo/medical"
+                };
+                const demoUrl = industryToUrl[demo.industry];
+                
+                return demoUrl ? (
+                  <Link key={i} href={demoUrl} className="block">
+                    <DemoCard demo={demo} />
+                  </Link>
+                ) : (
+                  <DemoCard key={i} demo={demo} />
+                )
                 ))}        </div>
 
         <div className="mt-12 text-center md:hidden">
