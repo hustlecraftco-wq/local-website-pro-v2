@@ -14,8 +14,8 @@ module.exports = withMT({
       colors: {
         'kc-dark': '#050505',
         'kc-panel': '#0A0A0A',
-        'kc-accent': '#ff6b35',
-        'kc-success': '#10B981',
+        'kc-accent': '#ff6b35', 
+        'kc-success': '#22c55e', 
         'kc-text': '#E2E8F0',
         'kc-muted': '#94A3B8',
       },
@@ -24,7 +24,17 @@ module.exports = withMT({
       },
       backgroundImage: {
         'glass': 'linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
-      }
+      },
+      // ADD THESE TWO BLOCKS BELOW
+      animation: {
+        'marquee': 'marquee 40s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        }
+      },
     },
   },
   plugins: [

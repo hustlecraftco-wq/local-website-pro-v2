@@ -1,74 +1,233 @@
 "use client";
-import { useEffect, useState } from "react";
-import { TrendingDown, Zap, AlertTriangle } from "lucide-react";
+import { useState } from "react";
+import { Zap, Activity, Database, Cpu, HardHat, Terminal, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export default function SpeedComparison() {
   const [startAnim, setStartAnim] = useState(false);
 
-  // Simple trigger to start animation when component mounts
-  useEffect(() => {
-    setStartAnim(true);
-  }, []);
-
   return (
-    // ADDED id="speed" HERE SO THE NAVBAR LINK WORKS
-    <section id="speed" className="py-24 px-6 bg-black border-t border-white/10">
-      <div className="max-w-4xl mx-auto">
+    <section id="speed" className="py-24 px-6 bg-kc-dark border-t border-white/10 relative">
+      <div className="max-w-6xl mx-auto">
         
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-black text-white mb-4">Speed is <span className="text-kc-success">Money.</span></h2>
-          <p className="text-kc-muted text-lg">
-            53% of mobile users leave a site that takes longer than 3 seconds to load.
+        {/* HEADER: THE SHIFT */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20 items-end">
+          <div>
+            <div className="inline-block px-3 py-1 bg-kc-accent/10 border border-kc-accent/30 text-kc-accent text-xs font-black tracking-[0.3em] uppercase mb-6">
+              System Architecture: 2025 Standard
+            </div>
+            <h2 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-[0.9]">
+              NOT A WEBSITE.<br/>
+              <span className="text-kc-accent">A LEAD MACHINE.</span>
+            </h2>
+          </div>
+          <p className="text-kc-text text-xl border-l-2 border-white/10 pl-8 leading-snug">
+            Most KC agencies sell you a "pretty" WordPress site. I build <span className="text-white font-bold text-kc-accent italic">Full-Stack Business Automation</span>. Next.js performance, AI-driven dispatch, and 30-second CRM sync.
           </p>
         </div>
 
-        <div className="space-y-12">
-          
-          {/* THE RACE */}
-          <div className="space-y-6">
+        {/* THE PERFORMANCE SCHEMATIC */}
+        <div className="bg-kc-panel border-2 border-white/5 p-1 md:p-12 mb-20 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             
-            {/* YOU (Fast) */}
-            <div>
-              <div className="flex justify-between text-white mb-2 text-sm font-bold uppercase tracking-widest">
-                <span className="flex items-center gap-2"><Zap className="w-4 h-4 text-yellow-400"/> Local Website Pro</span>
-                <span className="text-kc-success">0.4s (Instant)</span>
+            {/* THE TRACKS */}
+            <div className="lg:col-span-8 space-y-12">
+              <div className="space-y-4">
+                <div className="flex justify-between items-end">
+                  <span className="text-white font-black tracking-widest text-sm flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-kc-accent" /> ENGINE STATUS: NEXT.JS 15 (ACTIVE)
+                  </span>
+                  <span className="text-kc-accent font-mono text-2xl font-bold tracking-tighter">0.4s</span>
+                </div>
+                <div className="h-12 bg-white/5 border border-white/10 relative overflow-hidden">
+                   <div 
+                    className={`h-full bg-kc-accent transition-all duration-[500ms] ease-out shadow-[0_0_20px_rgba(255,107,53,0.4)] ${startAnim ? "w-full" : "w-0"}`}
+                  >
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+                  </div>
+                </div>
               </div>
-              <div className="h-4 bg-white/10 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full bg-kc-success transition-all duration-[400ms] ease-out ${startAnim ? "w-full" : "w-0"}`}
-                ></div>
+
+              <div className="space-y-4 opacity-40">
+                <div className="flex justify-between items-end">
+                  <span className="text-white font-black tracking-widest text-sm italic">TYPICAL KC AGENCY (WORDPRESS RENTAL)</span>
+                  <span className="text-white font-mono text-2xl tracking-tighter">3.2s</span>
+                </div>
+                <div className="h-12 bg-white/5 border border-white/10 overflow-hidden">
+                  <div 
+                    className={`h-full bg-white/20 transition-all duration-[3200ms] ease-linear ${startAnim ? "w-full" : "w-0"}`}
+                  ></div>
+                </div>
               </div>
             </div>
 
-            {/* THEM (Slow) */}
-            <div>
-              <div className="flex justify-between text-white mb-2 text-sm font-bold uppercase tracking-widest">
-                <span className="flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-red-500"/> Wix / Wordpress Template</span>
-                <span className="text-red-400">3.2s (Loading...)</span>
-              </div>
-              <div className="h-4 bg-white/10 rounded-full overflow-hidden relative">
-                {/* The "Loading" Animation */}
-                <div 
-                  className={`h-full bg-red-500/50 transition-all duration-[3200ms] ease-linear ${startAnim ? "w-full" : "w-0"}`}
-                ></div>
-              </div>
+            {/* THE TRIGGER */}
+            <div className="lg:col-span-4 flex flex-col justify-center">
+              {!startAnim ? (
+                <button 
+                  onClick={() => setStartAnim(true)}
+                  className="w-full bg-kc-accent text-white font-black py-8 text-xl uppercase tracking-widest hover:brightness-110 transition-all shadow-[0_10px_40px_rgba(255,107,53,0.3)] active:scale-95"
+                >
+                  Test My Engine
+                </button>
+              ) : (
+                <div className="space-y-4 border-2 border-kc-accent/50 p-6 bg-kc-accent/5 animate-pulse">
+                  <div className="flex items-center gap-2 text-kc-accent font-black uppercase tracking-widest text-sm">
+                    <Activity className="w-4 h-4" /> Optimization Confirmed
+                  </div>
+                  <p className="text-white text-xs font-bold leading-tight">SYSTEMS: RESPONSE TIME SECURED UNDER 1.0s</p>
+                </div>
+              )}
             </div>
+          </div>
+        </div>
 
+        {/* THE PRECISION ENGINEERING SECTION */}
+<div className="mt-32 border-t border-white/5 pt-20">
+  <div className="flex flex-col md:flex-row gap-12 items-start">
+    <div className="md:w-1/3 sticky top-24">
+      <div className="inline-block px-3 py-1 bg-white/5 border border-white/10 text-kc-muted text-[10px] font-black tracking-[0.3em] uppercase mb-4">
+        Deep-Level Optimization
+      </div>
+      <h3 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-6">
+        OBESSIVE <br/><span className="text-kc-accent italic text-5xl">DETAIL.</span>
+      </h3>
+      <p className="text-kc-muted leading-relaxed mb-8">
+        Most agencies stop at the surface. I optimize the parts you can't see. My code is clean, documented, and built for 2030, not 2010.
+      </p>
+      <div className="space-y-2">
+         {['100/100 Lighthouse Scores', 'Next.js 15 Static-First', 'Semantic HTML5 Architecture', 'Edge-Network Delivery'].map((stat) => (
+           <div key={stat} className="flex items-center gap-2 text-white font-mono text-[11px] uppercase tracking-widest">
+             <div className="w-1.5 h-1.5 bg-kc-accent"></div> {stat}
+           </div>
+         ))}
+      </div>
+    </div>
+
+    <div className="md:w-2/3 grid grid-cols-1 gap-4">
+      {/* Detail Card 1 */}
+      <div className="p-1 bg-white/5 border border-white/10 hover:border-kc-accent/30 transition-all group">
+        <div className="p-6 border border-white/5 flex gap-6">
+           <div className="text-kc-accent font-mono text-xl opacity-30 font-black">01</div>
+           <div>
+             <h4 className="text-white font-black uppercase italic mb-2 tracking-tight">Image Bio-Optimization</h4>
+             <p className="text-sm text-kc-muted">
+               I don't just "upload photos." Every image is converted to <span className="text-white font-bold underline decoration-kc-accent">AVIF/WebP</span>, lazy-loaded, and serves specific sizes based on the user's phone. No wasted data. No blurry loads.
+             </p>
+           </div>
+        </div>
+      </div>
+
+      {/* Detail Card 2 */}
+      <div className="p-1 bg-white/5 border border-white/10 hover:border-kc-accent/30 transition-all group">
+        <div className="p-6 border border-white/5 flex gap-6">
+           <div className="text-kc-accent font-mono text-xl opacity-30 font-black">02</div>
+           <div>
+             <h4 className="text-white font-black uppercase italic mb-2 tracking-tight">Zero-Bloat CSS</h4>
+             <p className="text-sm text-kc-muted">
+               Agencies use "builders" that load 2MB of junk code for a single button. I use <span className="text-white font-bold underline decoration-kc-accent">Tailwind Engine</span> optimization to ensure your site only ships the exact pixels it needs.
+             </p>
+           </div>
+        </div>
+      </div>
+
+      {/* Detail Card 3 */}
+      <div className="p-1 bg-white/5 border border-white/10 hover:border-kc-accent/30 transition-all group">
+        <div className="p-6 border border-white/5 flex gap-6">
+           <div className="text-kc-accent font-mono text-xl opacity-30 font-black">03</div>
+           <div>
+             <h4 className="text-white font-black uppercase italic mb-2 tracking-tight">Local-First Caching</h4>
+             <p className="text-kc-muted text-sm leading-relaxed">
+                Your site is distributed across global <span className="text-white font-bold underline decoration-kc-accent">Edge Servers</span>. When a lead in KC visits your site, the data travels 10 miles, not 3,000. It feels like an app, not a webpage.
+             </p>
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        {/* THE "WHY WE WIN" BLOCKS - INDUSTRIAL STYLE */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <div className="p-8 bg-kc-panel border border-white/10 relative group hover:border-kc-accent/50 transition-all">
+            <Cpu className="text-kc-accent w-10 h-10 mb-6" />
+            <h3 className="text-white font-black text-xl uppercase mb-4 leading-tight italic">SEO AS <br/> ARCHITECTURE</h3>
+            <p className="text-kc-muted text-sm leading-relaxed mb-6">
+              No Yoast "tape." I build programmatic local SEO into the Next.js routes. Every KC zip code gets a pre-rendered, instant-load landing page.
+            </p>
+            <div className="text-kc-accent font-mono text-[10px] tracking-widest uppercase opacity-50">Status: Automated</div>
           </div>
 
-          {/* THE REALITY CHECK (The Stat) */}
-          <div className="bg-red-900/10 border border-red-500/20 p-6 rounded-2xl flex items-start gap-4">
-            <TrendingDown className="w-8 h-8 text-red-500 shrink-0" />
-            <div>
-              <h3 className="text-xl font-bold text-white mb-1">You are losing 20% of your revenue.</h3>
-              <p className="text-kc-muted text-sm">
-                Google data shows that as page load time goes from 1s to 3s, the probability of a user leaving increases by 32%. If they can't see it, they can't buy it.
-              </p>
-            </div>
+          <div className="p-8 bg-kc-panel border border-white/10 relative group hover:border-kc-accent/50 transition-all">
+            <Database className="text-kc-accent w-10 h-10 mb-6" />
+            <h3 className="text-white font-black text-xl uppercase mb-4 leading-tight italic">RAG AI <br/> DISPATCH</h3>
+            <p className="text-kc-muted text-sm leading-relaxed mb-6">
+              AI that actually knows your pricing and service area. It handles midnight calls and books jobs while you sleep—grounded in your data.
+            </p>
+            <div className="text-kc-accent font-mono text-[10px] tracking-widest uppercase opacity-50">Status: Integrated</div>
+          </div>
+
+          <div className="p-8 bg-kc-panel border border-white/10 relative group hover:border-kc-accent/50 transition-all">
+            <Activity className="text-kc-accent w-10 h-10 mb-6" />
+            <h3 className="text-white font-black text-xl uppercase mb-4 leading-tight italic">30-SEC <br/> CRM SYNC</h3>
+            <p className="text-kc-muted text-sm leading-relaxed mb-6">
+              Leads hit your CRM in under 30 seconds. Enriched, scored, and routed. First responder wins the job. I make sure you're always first.
+            </p>
+            <div className="text-kc-accent font-mono text-[10px] tracking-widest uppercase opacity-50">Status: Synchronized</div>
+          </div>
+
+          <div className="p-8 bg-kc-accent text-black relative group">
+            <HardHat className="w-10 h-10 mb-6" />
+            <h3 className="font-black text-xl uppercase mb-4 leading-tight italic">ZERO-RENTAL <br/> EQUITY</h3>
+            <p className="font-bold text-sm leading-relaxed mb-6 text-black/80">
+              You own the code. No monthly "website rental" fees. It’s an engineered asset that builds equity for your business, not the agency.
+            </p>
+            <div className="font-mono text-[10px] tracking-widest uppercase text-black/60 font-black">Status: Ownership</div>
           </div>
 
         </div>
       </div>
-    </section>
+    {/* SYSTEM DIAGNOSTIC TICKER */}
+<div className="mt-20 border-y border-white/5 bg-white/[0.02] py-4 overflow-hidden flex whitespace-nowrap">
+  <div className="flex animate-marquee gap-12 items-center">
+    {[
+      "SYSTEM STATUS: OPTIMIZED",
+      "NEXT.JS 15 RUNTIME: STABLE",
+      "CORE WEB VITALS: 100/100",
+      "IMAGE COMPRESSION: AVIF ACTIVE",
+      "SSL ENCRYPTION: AES-256",
+      "EDGE DELIVERY: KANSAS CITY NODE",
+      "LEAD SYNC: 30S LATENCY TARGET",
+      "AI MODEL: RAG GROUNDED",
+    ].map((text, i) => (
+      <div key={i} className="flex items-center gap-3">
+        <div className="w-2 h-2 bg-kc-success rounded-full animate-pulse" />
+        <span className="text-white font-mono text-[10px] uppercase tracking-[0.2em] opacity-50">
+          {text}
+        </span>
+      </div>
+    ))}
+  </div>
+  {/* Duplicate for seamless loop */}
+  <div className="flex animate-marquee gap-12 items-center ml-12" aria-hidden="true">
+    {[
+      "SYSTEM STATUS: OPTIMIZED",
+      "NEXT.JS 15 RUNTIME: STABLE",
+      "CORE WEB VITALS: 100/100",
+      "IMAGE COMPRESSION: AVIF ACTIVE",
+      "SSL ENCRYPTION: AES-256",
+      "EDGE DELIVERY: KANSAS CITY NODE",
+      "LEAD SYNC: 30S LATENCY TARGET",
+      "AI MODEL: RAG GROUNDED",
+    ].map((text, i) => (
+      <div key={i} className="flex items-center gap-3">
+        <div className="w-2 h-2 bg-kc-success rounded-full animate-pulse" />
+        <span className="text-white font-mono text-[10px] uppercase tracking-[0.2em] opacity-50">
+          {text}
+        </span>
+      </div>
+    ))}
+  </div>
+</div>
+     </section>
   );
 }
