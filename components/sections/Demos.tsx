@@ -193,7 +193,7 @@ function DemoCard({ demo }: { demo: any }) {
 // --- MAIN COMPONENT ---
 export default function Demos() {
   return (
-    <section id="demos" className="py-24 px-6 bg-kc-dark border-t border-white/5">
+      <section id="demos" className="py-24 px-6 bg-kc-dark border-t border-white/5">
       <div className="max-w-7xl mx-auto">
         
         {/* HEADER */}
