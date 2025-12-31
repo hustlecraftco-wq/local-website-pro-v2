@@ -195,7 +195,11 @@ export default function Demos() {
   return (
       <section id="demos" className="py-24 px-6 bg-kc-dark border-t border-white/5">
       <div className="max-w-7xl mx-auto">
-        
+        {/* Your content */}
+      </div>
+    </section>
+  );
+}  
         {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
