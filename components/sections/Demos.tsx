@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useRef, useEffect, useState } from "react";
 import { ExternalLink, ArrowRight, Phone, Scale, TrendingUp, Activity, Hammer, Droplets, Leaf } from "lucide-react";
@@ -212,10 +213,15 @@ export default function Demos() {
 
         {/* DEMO GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {demos.map((demo, i) => (
-            <DemoCard key={i} demo={demo} />
-          ))}
-        </div>
+                {demos.map((demo, i) => (
+                  demo.title === "The High-Ticket Closer" ? (
+                    <Link key={i} href="/demo/roofer" className="block">
+                      <DemoCard demo={demo} />
+                    </Link>
+                  ) : (
+                    <DemoCard key={i} demo={demo} />
+                  )
+                ))}        </div>
 
         <div className="mt-12 text-center md:hidden">
              <a href="/contact" className="inline-flex items-center gap-2 text-white font-bold hover:text-kc-accent transition-colors">
