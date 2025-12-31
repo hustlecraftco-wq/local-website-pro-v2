@@ -106,7 +106,7 @@ export default function Hero() {
           className="inline-flex items-center gap-2 py-2 px-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 shadow-2xl"
         >
           <span className="w-2 h-2 rounded-full bg-kc-accent animate-pulse"></span>
-          <span className="text-white text-xs font-bold uppercase tracking-[0.2em]">KC's Top Hand-Coded Assets</span>
+          <span className="text-white text-xs font-bold uppercase tracking-[0.2em]">KC's Fastest Hand-Coded Assets</span>
         </motion.div>
 
         <motion.h1 
@@ -121,7 +121,7 @@ export default function Hero() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
           className="text-lg md:text-2xl text-kc-muted mb-12 max-w-3xl mx-auto leading-relaxed"
         >
-          We build fast, custom-coded assets for KC Businesses and Professionals. 
+          We build fast, custom-coded Websites for KC Businesses and Professionals. 
           <span className="text-white font-semibold"> 0.4s Load Time. No Monthly Fees. 100% Ownership.</span>
         </motion.p>
 
@@ -178,7 +178,7 @@ export default function Hero() {
                     In that 2.8s gap, your customer left.
                   </p>
                   <p className="text-xs text-kc-muted mb-3 italic">
-                    "53% of visits are abandoned if a mobile site takes longer than 3 seconds to load."
+                    "If their house is flooding, they won't wait. Would you?"
                   </p>
                   <button onClick={resetSpeedTest} className="text-xs text-kc-accent uppercase font-bold tracking-widest hover:text-white transition-colors">
                     Reset Test
