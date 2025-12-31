@@ -121,7 +121,7 @@ export default function Hero() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
           className="text-lg md:text-2xl text-kc-muted mb-12 max-w-3xl mx-auto leading-relaxed"
         >
-          We build fast, custom-coded Websites for KC Businesses and Professionals. 
+          We build fast, custom-coded digital storefronts for KC Businesses and Professionals. 
           <span className="text-white font-semibold"> 0.4s Load Time. No Monthly Fees. 100% Ownership.</span>
         </motion.p>
 
