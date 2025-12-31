@@ -124,15 +124,21 @@ const FluidScene = () => {
 
   useFrame((state) => {
     if (meshRef.current) {
-      meshRef.current.material.uniforms.uTime.value = state.clock.getElapsedTime();
-      // Mouse interaction smoothing
-      const targetX = (state.pointer.x + 1) / 2;
-      const targetY = (state.pointer.y + 1) / 2;
-      meshRef.current.material.uniforms.uMouse.value.x += (targetX - meshRef.current.material.uniforms.uMouse.value.x) * 0.05;
-      meshRef.current.material.uniforms.uMouse.value.y += (targetY - meshRef.current.material.uniforms.uMouse.value.y) * 0.05;
+      // FIX: Cast material to THREE.ShaderMaterial so TS knows 'uniforms' exists
+      const material = meshRef.current.material as THREE.ShaderMaterial;
+      
+      if (material.uniforms) {
+        material.uniforms.uTime.value = state.clock.getElapsedTime();
+        
+        // Mouse interaction smoothing
+        const targetX = (state.pointer.x + 1) / 2;
+        const targetY = (state.pointer.y + 1) / 2;
+        
+        material.uniforms.uMouse.value.x += (targetX - material.uniforms.uMouse.value.x) * 0.05;
+        material.uniforms.uMouse.value.y += (targetY - material.uniforms.uMouse.value.y) * 0.05;
+      }
     }
   });
-
   return (
     <mesh ref={meshRef} rotation={[-Math.PI / 2.5, 0, 0]} position={[0, -3, -8]}>
       {/* High-Res Plane for 4K Look */}
