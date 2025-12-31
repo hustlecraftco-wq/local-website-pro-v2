@@ -192,56 +192,54 @@ function DemoCard({ demo }: { demo: any }) {
 
 // --- MAIN COMPONENT ---
 export default function Demos() {
+  const industryToUrl: Record<string, string> = {
+    "Plumbing & HVAC": "/demo/plumber",
+    "Roofing & Exteriors": "/demo/roofer",
+    "Landscaping & Hardscape": "/demo/landscaping",
+    "Legal & Attorney": "/demo/lawyer",
+    "Financial & CPA": "/demo/finance",
+    "Medical & Dental": "/demo/medical"
+  };
+
   return (
-      <section id="demos" className="py-24 px-6 bg-kc-dark border-t border-white/5">
+    <section id="demos" className="py-24 px-6 bg-kc-dark border-t border-white/5">
       <div className="max-w-7xl mx-auto">
-        {/* Your content */}
-      </div>
-    </section>
-  );
-}  
+        
         {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
             <h2 className="text-3xl md:text-5xl font-black text-white mb-6">
-              Don't imagine it. <span className="text-kc-accent">See it.</span>
+              Don&apos;t imagine it. <span className="text-kc-accent">See it.</span>
             </h2>
             <p className="text-kc-muted text-lg">
-              We build specialized assets for high-value industries. These aren't templates; they are sector-specific lead machines.
+              We build specialized assets for high-value industries. These aren&apos;t templates; they are sector-specific lead machines.
             </p>
           </div>
-          <a href="/contact" className="hidden md:flex items-center gap-2 text-white font-bold hover:text-kc-accent transition-colors">
+          <Link href="/contact" className="hidden md:flex items-center gap-2 text-white font-bold hover:text-kc-accent transition-colors">
             Get a Custom Mockup <ArrowRight className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
 
         {/* DEMO GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {demos.map((demo, i) => (
-                  // Create URL based on industry
-                const industryToUrl: Record<string, string> = {
-                  "Plumbing & HVAC": "/demo/plumber",
-                  "Roofing & Exteriors": "/demo/roofer",
-                  "Landscaping & Hardscape": "/demo/landscaping",
-                  "Legal & Attorney": "/demo/lawyer",
-                  "Financial & CPA": "/demo/finance",
-                  "Medical & Dental": "/demo/medical"
-                };
-                const demoUrl = industryToUrl[demo.industry];
-                
-                return demoUrl ? (
-                  <Link key={i} href={demoUrl} className="block">
-                    <DemoCard demo={demo} />
-                  </Link>
-                ) : (
-                  <DemoCard key={i} demo={demo} />
-                )
-                ))}        </div>
+          {demos.map((demo, i) => {
+            const demoUrl = industryToUrl[demo.industry];
+            
+            return demoUrl ? (
+              <Link key={i} href={demoUrl} className="block">
+                <DemoCard demo={demo} />
+              </Link>
+            ) : (
+              <DemoCard key={i} demo={demo} />
+            );
+          })}
+        </div>
 
+        {/* MOBILE FOOTER */}
         <div className="mt-12 text-center md:hidden">
-             <a href="/contact" className="inline-flex items-center gap-2 text-white font-bold hover:text-kc-accent transition-colors">
-                Get a Custom Mockup <ArrowRight className="w-4 h-4" />
-            </a>
+          <Link href="/contact" className="inline-flex items-center gap-2 text-white font-bold hover:text-kc-accent transition-colors">
+            Get a Custom Mockup <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
 
       </div>
