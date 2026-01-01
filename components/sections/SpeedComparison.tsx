@@ -6,7 +6,7 @@ export default function SpeedComparison() {
   const [startAnim, setStartAnim] = useState(false);
 
   return (
-    <section id="speed" className="py-24 px-6 bg-kc-dark border-t border-white/10 relative">
+    <section id="speed" className="py-24 px-6 bg-kc-dark border-t border-white/10 relative overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
         
         {/* HEADER: THE SHIFT */}
@@ -84,7 +84,7 @@ export default function SpeedComparison() {
         {/* THE PRECISION ENGINEERING SECTION */}
 <div className="mt-32 border-t border-white/5 pt-20">
   <div className="flex flex-col md:flex-row gap-12 items-start">
-    <div className="md:w-1/3 sticky top-24">
+    <div className="md:w-1/3 md:sticky md:top-24">
       <div className="inline-block px-3 py-1 bg-white/5 border border-white/10 text-kc-muted text-[10px] font-black tracking-[0.3em] uppercase mb-4">
         Deep-Level Optimization
       </div>
@@ -187,7 +187,7 @@ export default function SpeedComparison() {
         </div>
       </div>
     {/* SYSTEM DIAGNOSTIC TICKER */}
-<div className="mt-20 border-y border-white/5 bg-white/[0.02] py-4 overflow-hidden flex whitespace-nowrap">
+<div className="mt-20 border-y border-white/5 bg-white/[0.02] py-4 overflow-hidden flex whitespace-nowrap max-w-full">
   <div className="flex animate-marquee gap-12 items-center">
     {[
       "SYSTEM STATUS: OPTIMIZED",
