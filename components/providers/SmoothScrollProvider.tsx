@@ -12,16 +12,15 @@ export default function SmoothScrollProvider({ children }: SmoothScrollProviderP
     <ReactLenis
       root
       options={{
-        lerp: 0.1,
-        duration: 1.5,
+        lerp: 0.12,                      // Slightly higher for snappier response (0.1 was too sluggish)
+        duration: 1.2,                   // Reduced from 1.5 for faster scroll settling
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        // --- UPDATED PROPERTIES BELOW ---
-        orientation: "vertical",        // changed from 'direction'
-        gestureOrientation: "vertical", // changed from 'gestureDirection'
-        smoothWheel: true,              // changed from 'smooth'
+        orientation: "vertical",
+        gestureOrientation: "vertical",
+        smoothWheel: true,
+        wheelMultiplier: 1,              // Default wheel sensitivity
         touchMultiplier: 2,
         infinite: false,
-        // smoothTouch is removed (touch handling is native by default in v1)
       }}
     >
       {children}

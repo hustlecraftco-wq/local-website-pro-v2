@@ -19,7 +19,9 @@ import { TextRevealWords, TextRevealGradient } from "@/components/ui/TextReveal"
 import ScrollReveal, { ScrollRevealScale } from "@/components/ui/ScrollReveal";
 import Parallax, { ParallaxText, ParallaxScale } from "@/components/ui/Parallax";
 import { HoverGlow, HoverTilt, HoverLift, HoverBorderGlow, SpotlightCard, AnimatedCounter } from "@/components/ui/HoverEffects";
-import ScrollytellingSection from "@/components/ui/Scrollytelling";
+
+// Dynamic import for Scrollytelling (client-only to properly integrate with Lenis smooth scroll)
+const ScrollytellingSection = dynamic(() => import("@/components/ui/Scrollytelling"), { ssr: false });
 
 // Finance Components (Dynamic Imports for Performance)
 const ROICalculator = dynamic(() => import("@/components/finance/ROICalculator"), { ssr: false });
