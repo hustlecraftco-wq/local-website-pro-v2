@@ -1,115 +1,136 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useTransform, useMotionValue, AnimatePresence } from "framer-motion";
-import { Brain, Database, Zap, MessageSquare, Shield, TrendingUp, Lock, BarChart3 } from "lucide-react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  useMotionValue,
+  useVelocity,
+  useAnimationFrame,
+  AnimatePresence
+} from "framer-motion";
+import { Brain, Database, Zap, MessageSquare, Shield, Lock, Server, Cpu } from "lucide-react";
 import Image from "next/image";
-import { useLenis } from "@studio-freight/react-lenis";
 
+// --- VELOCITY MARQUEE (Award-winning pattern) ---
+const wrap = (min: number, max: number, v: number) => {
+  const range = max - min;
+  return ((((v - min) % range) + range) % range) + min;
+};
+
+function VelocityMarquee({ children, baseVelocity = 50 }: { children: React.ReactNode; baseVelocity?: number }) {
+  const baseX = useMotionValue(0);
+  const { scrollY } = useScroll();
+  const scrollVelocity = useVelocity(scrollY);
+  const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 });
+  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 5], { clamp: false });
+  const x = useTransform(baseX, (v) => `${wrap(-20, -45, v)}%`);
+  const directionFactor = useRef(1);
+
+  useAnimationFrame((t, delta) => {
+    let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
+    if (velocityFactor.get() < 0) directionFactor.current = -1;
+    else if (velocityFactor.get() > 0) directionFactor.current = 1;
+    moveBy += directionFactor.current * moveBy * velocityFactor.get();
+    baseX.set(baseX.get() + moveBy);
+  });
+
+  return (
+    <div className="overflow-hidden whitespace-nowrap flex flex-nowrap">
+      <motion.div
+        className="flex whitespace-nowrap gap-8 font-mono text-xs uppercase tracking-[0.3em] py-5"
+        style={{ x }}
+      >
+        {[...Array(8)].map((_, i) => (
+          <span key={i} className="flex items-center gap-8 text-emerald-400/80">
+            {children}
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+          </span>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+// --- STEP DATA ---
 interface ScrollytellingStep {
   title: string;
+  subtitle: string;
   description: string;
   icon: React.ElementType;
   color: string;
-  iconClass: string;
-  bgClass: string;
-  borderClass: string;
-  media: {
-    type: "image" | "video";
-    src: string;
-    alt?: string;
-  };
-  stats?: { label: string; value: string }[];
+  image: string;
+  stats: { label: string; value: string }[];
 }
 
 const steps: ScrollytellingStep[] = [
   {
-    title: "Data Ingestion",
+    title: "INGEST",
+    subtitle: "Data Ingestion",
     description: "Your financial documents, market data, and client preferences are securely ingested and encrypted with bank-grade AES-256 encryption.",
     icon: Database,
     color: "emerald",
-    iconClass: "text-emerald-400",
-    bgClass: "bg-emerald-500/20",
-    borderClass: "border-emerald-500/50",
-    media: {
-      type: "image",
-      src: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
-      alt: "Data dashboard showing secure financial ingestion",
-    },
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80",
     stats: [
       { label: "Encryption", value: "AES-256" },
       { label: "Data Points", value: "50M+" },
     ],
   },
   {
-    title: "Vector Analysis",
+    title: "ANALYZE",
+    subtitle: "Vector Analysis",
     description: "Our RAG engine transforms your data into high-dimensional vectors, enabling semantic search across millions of data points in milliseconds.",
     icon: Brain,
     color: "amber",
-    iconClass: "text-amber-400",
-    bgClass: "bg-amber-500/20",
-    borderClass: "border-amber-500/50",
-    media: {
-      type: "image",
-      src: "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=800&q=80",
-      alt: "Neural network visualization representing vector analysis",
-    },
+    image: "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1200&q=80",
     stats: [
       { label: "Dimensions", value: "1536" },
       { label: "Query Speed", value: "<50ms" },
     ],
   },
   {
-    title: "Context Retrieval",
+    title: "RETRIEVE",
+    subtitle: "Context Retrieval",
     description: "When you ask a question, the AI retrieves the most relevant context from your entire knowledge base—not just keyword matches.",
     icon: Zap,
     color: "blue",
-    iconClass: "text-blue-400",
-    bgClass: "bg-blue-500/20",
-    borderClass: "border-blue-500/50",
-    media: {
-      type: "image",
-      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
-      alt: "Data retrieval and search interface",
-    },
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80",
     stats: [
       { label: "Accuracy", value: "99.2%" },
-      { label: "Context Window", value: "128K" },
+      { label: "Context", value: "128K" },
     ],
   },
   {
-    title: "Intelligent Response",
+    title: "RESPOND",
+    subtitle: "Intelligent Response",
     description: "The AI synthesizes retrieved context with real-time market data to generate personalized, actionable financial insights.",
     icon: MessageSquare,
     color: "purple",
-    iconClass: "text-purple-400",
-    bgClass: "bg-purple-500/20",
-    borderClass: "border-purple-500/50",
-    media: {
-      type: "image",
-      src: "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=800&q=80",
-      alt: "AI-generated financial insights dashboard",
-    },
+    image: "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=1200&q=80",
     stats: [
-      { label: "Response Time", value: "1.2s" },
+      { label: "Response", value: "1.2s" },
       { label: "Confidence", value: "97%" },
     ],
   },
 ];
 
-/**
- * ScrollytellingSection - The "Sticky Scroll Reveal" pattern
- * A key differentiator for award-winning financial interfaces.
- * Pins a visualization while text cards scroll past, explaining the AI process.
- */
+// --- MAIN COMPONENT ---
 export default function ScrollytellingSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeStep, setActiveStep] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
-  // Create a motion value that we'll manually update from Lenis
-  const scrollProgress = useMotionValue(0);
+  // Framer Motion scroll tracking
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  // Smooth spring for animations
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
   // Check for client-side and mobile
   useEffect(() => {
@@ -120,62 +141,29 @@ export default function ScrollytellingSection() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Calculate scroll progress manually based on element position
-  const updateScrollProgress = useCallback(() => {
-    if (!containerRef.current || typeof window === 'undefined') return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-
-    // Calculate progress: 0 when element top reaches viewport top, 1 when element bottom leaves
-    const elementTop = rect.top;
-    const elementHeight = rect.height;
-
-    // Start progress when element enters viewport, end when it exits
-    const scrollStart = windowHeight; // Element top at bottom of viewport
-    const scrollEnd = -elementHeight; // Element bottom leaves top of viewport
-    const totalScrollDistance = scrollStart - scrollEnd;
-
-    // Current progress through the scroll
-    const currentProgress = (scrollStart - elementTop) / totalScrollDistance;
-    const clampedProgress = Math.max(0, Math.min(1, currentProgress));
-
-    scrollProgress.set(clampedProgress);
-
-    // Update active step based on progress
-    // Divide progress into equal sections for each step
-    const progressPerStep = 1 / steps.length;
-    const stepIndex = Math.floor(clampedProgress / progressPerStep);
-    setActiveStep(Math.min(Math.max(0, stepIndex), steps.length - 1));
-  }, [scrollProgress]);
-
-  // Use Lenis scroll event to update progress smoothly
-  useLenis(() => {
-    updateScrollProgress();
-  });
-
-  // Also update on mount and resize
+  // Update active step based on scroll progress
   useEffect(() => {
-    if (isClient) {
-      updateScrollProgress();
-      window.addEventListener('resize', updateScrollProgress);
-      // Fallback scroll listener for non-Lenis environments
-      window.addEventListener('scroll', updateScrollProgress, { passive: true });
-      return () => {
-        window.removeEventListener('resize', updateScrollProgress);
-        window.removeEventListener('scroll', updateScrollProgress);
-      };
-    }
-  }, [updateScrollProgress, isClient]);
+    const unsubscribe = scrollYProgress.on("change", (latest) => {
+      const stepIndex = Math.min(
+        Math.floor(latest * steps.length),
+        steps.length - 1
+      );
+      setActiveStep(Math.max(0, stepIndex));
+    });
+    return () => unsubscribe();
+  }, [scrollYProgress]);
 
-  // Animate the visualization based on scroll progress
-  const scale = useTransform(scrollProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
-  const opacity = useTransform(scrollProgress, [0, 0.1, 0.9, 1], [0.7, 1, 1, 0.7]);
+  // Transform values for animations
+  const clipPathSize = useTransform(
+    smoothProgress,
+    [0, 0.15, 0.85, 1],
+    ["inset(100% 0 0 0)", "inset(0% 0 0 0)", "inset(0% 0 0 0)", "inset(0 0 100% 0)"]
+  );
 
   // Don't render until client-side
   if (!isClient) {
     return (
-      <section className="relative py-20 px-4 bg-[#0A1628]">
+      <section className="relative py-32 bg-[#030303]">
         <div className="max-w-4xl mx-auto text-center">
           <div className="h-[50vh] flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
@@ -185,62 +173,89 @@ export default function ScrollytellingSection() {
     );
   }
 
-  // Mobile: Simple card layout instead of sticky scroll
+  // Mobile: Editorial card layout
   if (isMobile) {
     return (
-      <section className="relative py-20 px-4 bg-[#0A1628]">
+      <section className="relative py-24 px-4 bg-[#030303]">
+        {/* Velocity Marquee */}
+        <div className="border-y border-white/5 bg-black/40 backdrop-blur-sm mb-16">
+          <VelocityMarquee baseVelocity={-2}>
+            RAG ENGINE — VECTOR ANALYSIS — SEMANTIC SEARCH — AI SYNTHESIS
+          </VelocityMarquee>
+        </div>
+
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
-              <Brain className="w-4 h-4" />
-              AI-Powered Intelligence
-            </div>
-            <h2 className="text-3xl font-black text-white mb-4">
-              How Our RAG Engine Works
-            </h2>
-            <p className="text-base text-slate-400">
-              Transparent AI that shows its work.
+          <div className="text-center mb-16">
+            <p className="font-mono text-emerald-500 mb-4 uppercase tracking-[0.2em] text-xs">
+              System Architecture
             </p>
+            <h2 className="text-5xl font-serif font-light text-white tracking-tight">
+              How It <span className="italic text-emerald-400">Works</span>
+            </h2>
           </div>
 
           {/* Mobile Cards */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {steps.map((step, i) => {
               const Icon = step.icon;
               return (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-slate-900/80 border border-slate-700/50 rounded-2xl overflow-hidden"
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ delay: i * 0.1, duration: 0.6 }}
+                  className="relative overflow-hidden bg-[#0A0A0A] border border-white/10"
                 >
-                  {/* Mobile Image */}
+                  {/* Image */}
                   <div className="relative w-full aspect-video">
                     <Image
-                      src={step.media.src}
-                      alt={step.media.alt || step.title}
+                      src={step.image}
+                      alt={step.subtitle}
                       fill
                       className="object-cover"
                       sizes="100vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/60 to-transparent" />
+
+                    {/* Step Number */}
+                    <div className="absolute top-4 left-4 font-mono text-xs text-white/40 tracking-widest">
+                      /// 0{i + 1}
+                    </div>
+
+                    {/* Large Title */}
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="text-4xl font-serif font-light text-white tracking-tight">
+                        {step.title}
+                      </h3>
+                    </div>
                   </div>
 
+                  {/* Content */}
                   <div className="p-6">
-                    <div className="flex items-start gap-4">
-                      <div className={`p-3 rounded-xl ${step.bgClass} shrink-0`}>
-                        <Icon className={`w-6 h-6 ${step.iconClass}`} />
-                      </div>
-                      <div>
-                        <div className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-1">
-                          Step {i + 1}
+                    <div className="flex items-center gap-3 mb-4">
+                      <Icon className={`w-5 h-5 ${
+                        step.color === 'emerald' ? 'text-emerald-400' :
+                        step.color === 'amber' ? 'text-amber-400' :
+                        step.color === 'blue' ? 'text-blue-400' : 'text-purple-400'
+                      }`} />
+                      <span className="text-sm text-white/60">{step.subtitle}</span>
+                    </div>
+                    <p className="text-white/50 text-sm leading-relaxed mb-6">{step.description}</p>
+
+                    {/* Stats */}
+                    <div className="flex gap-6">
+                      {step.stats.map((stat, si) => (
+                        <div key={si}>
+                          <div className="text-xs font-mono text-white/30 uppercase tracking-wider mb-1">{stat.label}</div>
+                          <div className={`text-lg font-mono ${
+                            step.color === 'emerald' ? 'text-emerald-400' :
+                            step.color === 'amber' ? 'text-amber-400' :
+                            step.color === 'blue' ? 'text-blue-400' : 'text-purple-400'
+                          }`}>{stat.value}</div>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
-                        <p className="text-sm text-slate-400 leading-relaxed">{step.description}</p>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </motion.div>
@@ -252,217 +267,207 @@ export default function ScrollytellingSection() {
     );
   }
 
-  // Desktop: Full Scrollytelling experience
+  // Desktop: Award-winning Scrollytelling experience
   return (
     <section
       ref={containerRef}
-      className="relative z-30"
-      style={{ height: '350vh' }}
-      aria-labelledby="how-it-works-heading"
+      className="relative bg-[#030303]"
+      style={{ height: `${(steps.length + 1) * 100}vh` }}
     >
-      {/* Solid background to prevent hero bleed-through */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0A1628] via-slate-950 to-[#0A1628]" />
+      {/* Sticky Container - full screen experience */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
 
-      {/* Decorative elements */}
-      <div className="absolute top-1/4 -left-32 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
+        {/* Velocity Marquee - Inside sticky, at top */}
+        <div className="absolute top-0 left-0 right-0 z-50 border-b border-white/5 bg-black/80 backdrop-blur-md">
+          <VelocityMarquee baseVelocity={-2}>
+            RAG ENGINE — VECTOR ANALYSIS — SEMANTIC SEARCH — AI SYNTHESIS
+          </VelocityMarquee>
+        </div>
 
-      {/* Sticky Scroll Container - accounts for navbar height */}
-      <div
-        className="sticky z-20 flex items-center justify-center overflow-hidden"
-        style={{ top: '80px', height: 'calc(100vh - 80px)' }}
-      >
-        <div className="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center w-full">
-
-          {/* Left: Sticky Media Visualization */}
-          <motion.div
-            className="relative"
-            style={{ scale, opacity }}
-          >
-            {/* Section Header - Inside the sticky area */}
-            <div className="text-center lg:text-left mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-widest mb-4 backdrop-blur-sm">
-                <Brain className="w-4 h-4" />
-                AI-Powered Intelligence
-              </div>
-              <h2 id="how-it-works-heading" className="text-3xl lg:text-4xl font-black text-white mb-3">
-                How Our RAG Engine Works
-              </h2>
-              <p className="text-base text-slate-400 max-w-md">
-                Transparent AI that shows its work. See exactly how we process your data.
-              </p>
-            </div>
-
-            {/* Media Display - Changes with each step */}
-            <div className="relative w-full aspect-[4/3] max-w-lg mx-auto lg:mx-0 rounded-2xl overflow-hidden">
-              {/* Background glow effect */}
-              <motion.div
-                className="absolute -inset-4 rounded-3xl blur-3xl -z-10 transition-colors duration-700"
-                animate={{
-                  background: activeStep === 0 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(6, 78, 59, 0.2) 100%)' :
-                             activeStep === 1 ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(120, 53, 15, 0.2) 100%)' :
-                             activeStep === 2 ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(30, 58, 138, 0.2) 100%)' :
-                             'linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(88, 28, 135, 0.2) 100%)'
-                }}
+        {/* Background Image Layer with Clip-Path Reveal */}
+        <motion.div
+          className="absolute inset-0 z-0"
+          style={{ clipPath: clipPathSize }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeStep}
+              initial={{ scale: 1.1, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+              className="absolute inset-0"
+            >
+              <Image
+                src={steps[activeStep].image}
+                alt={steps[activeStep].subtitle}
+                fill
+                className="object-cover"
+                sizes="100vw"
+                priority
               />
+              {/* Gradient overlays */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#030303] via-[#030303]/80 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-[#030303]/50" />
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
 
-              {/* Media Container */}
-              <div className="relative w-full h-full bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
-                {/* Animated Image Crossfade */}
+        {/* Content Layer - with top padding for marquee */}
+        <div className="relative z-10 h-full flex items-center pt-16">
+          <div className="w-full max-w-[1600px] mx-auto px-6 md:px-24 grid lg:grid-cols-2 gap-16 items-center">
+
+            {/* Left: Typography & Content */}
+            <div className="relative">
+              {/* Section Label */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-px w-12 bg-white/40" />
+                <span className="font-mono text-xs uppercase tracking-[0.3em] text-emerald-400">
+                  System Architecture v4.0
+                </span>
+              </div>
+
+              {/* Giant Title */}
+              <div className="mb-12">
                 <AnimatePresence mode="wait">
-                  {steps.map((step, i) => (
-                    i === activeStep && (
-                      <motion.div
-                        key={i}
-                        className="absolute inset-0"
-                        initial={{ opacity: 0, scale: 1.1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
-                      >
-                        <Image
-                          src={step.media.src}
-                          alt={step.media.alt || step.title}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                          priority
-                        />
-                        {/* Overlay gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
-
-                        {/* Data overlay - Stats */}
-                        {step.stats && (
-                          <div className="absolute bottom-0 left-0 right-0 p-4">
-                            <div className="flex gap-4">
-                              {step.stats.map((stat, si) => (
-                                <motion.div
-                                  key={si}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: 0.2 + si * 0.1 }}
-                                  className="bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-lg px-3 py-2"
-                                >
-                                  <div className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">{stat.label}</div>
-                                  <div className={`text-lg font-bold ${step.iconClass}`}>{stat.value}</div>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </motion.div>
-                    )
-                  ))}
+                  <motion.div
+                    key={activeStep}
+                    initial={{ opacity: 0, y: 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -40 }}
+                    transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+                  >
+                    <h2 className="text-[12vw] lg:text-[8vw] leading-[0.85] font-serif font-light text-white tracking-tighter mix-blend-difference">
+                      {steps[activeStep].title}
+                    </h2>
+                    <h3 className="text-[6vw] lg:text-[4vw] leading-[0.9] font-serif italic text-emerald-400/80 tracking-tight -mt-2">
+                      {steps[activeStep].subtitle}
+                    </h3>
+                  </motion.div>
                 </AnimatePresence>
+              </div>
 
-                {/* Icon Badge */}
+              {/* Description */}
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={activeStep}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                  className="text-lg text-white/60 font-light leading-relaxed max-w-md mb-12"
+                >
+                  {steps[activeStep].description}
+                </motion.p>
+              </AnimatePresence>
+
+              {/* Stats */}
+              <AnimatePresence mode="wait">
                 <motion.div
                   key={activeStep}
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.1 }}
-                  className="absolute top-4 left-4 flex items-center gap-3"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
+                  className="flex gap-12"
                 >
-                  <div className={`p-3 rounded-xl ${steps[activeStep].bgClass} backdrop-blur-xl border border-white/10`}>
-                    {(() => {
-                      const Icon = steps[activeStep].icon;
-                      return <Icon className={`w-6 h-6 ${steps[activeStep].iconClass}`} />;
-                    })()}
-                  </div>
-                  <div>
-                    <div className="text-xs font-mono text-slate-400 uppercase tracking-widest">
-                      Step {activeStep + 1} of {steps.length}
+                  {steps[activeStep].stats.map((stat, i) => (
+                    <div key={i} className="border-l border-white/10 pl-6">
+                      <div className="text-xs font-mono text-white/30 uppercase tracking-widest mb-2">
+                        {stat.label}
+                      </div>
+                      <div className={`text-3xl font-mono ${
+                        steps[activeStep].color === 'emerald' ? 'text-emerald-400' :
+                        steps[activeStep].color === 'amber' ? 'text-amber-400' :
+                        steps[activeStep].color === 'blue' ? 'text-blue-400' : 'text-purple-400'
+                      }`}>
+                        {stat.value}
+                      </div>
                     </div>
-                    <div className="text-sm font-bold text-white">{steps[activeStep].title}</div>
-                  </div>
+                  ))}
                 </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Right: Step Indicator */}
+            <div className="hidden lg:flex flex-col justify-center items-end">
+              <div className="space-y-6">
+                {steps.map((step, i) => {
+                  const Icon = step.icon;
+                  const isActive = i === activeStep;
+
+                  return (
+                    <motion.div
+                      key={i}
+                      className={`flex items-center gap-6 transition-all duration-500 ${
+                        isActive ? 'opacity-100' : 'opacity-30'
+                      }`}
+                      animate={{
+                        x: isActive ? 0 : 20,
+                      }}
+                    >
+                      <div className="text-right">
+                        <div className="font-mono text-xs text-white/40 tracking-widest mb-1">
+                          /// 0{i + 1}
+                        </div>
+                        <div className={`text-lg font-light ${isActive ? 'text-white' : 'text-white/40'}`}>
+                          {step.subtitle}
+                        </div>
+                      </div>
+
+                      <div className={`relative w-16 h-16 rounded-full border transition-all duration-500 flex items-center justify-center ${
+                        isActive
+                          ? `border-${step.color}-500/50 bg-${step.color}-500/10`
+                          : 'border-white/10 bg-white/5'
+                      }`}>
+                        <Icon className={`w-6 h-6 transition-colors duration-500 ${
+                          isActive
+                            ? (step.color === 'emerald' ? 'text-emerald-400' :
+                               step.color === 'amber' ? 'text-amber-400' :
+                               step.color === 'blue' ? 'text-blue-400' : 'text-purple-400')
+                            : 'text-white/30'
+                        }`} />
+
+                        {/* Active ring */}
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeRing"
+                            className={`absolute inset-0 rounded-full border-2 ${
+                              step.color === 'emerald' ? 'border-emerald-500' :
+                              step.color === 'amber' ? 'border-amber-500' :
+                              step.color === 'blue' ? 'border-blue-500' : 'border-purple-500'
+                            }`}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                          />
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
 
-              {/* Step Progress Indicator */}
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
-                {steps.map((step, i) => (
-                  <motion.div
-                    key={i}
-                    className={`h-1.5 rounded-full transition-all duration-500`}
-                    animate={{
-                      width: i === activeStep ? 40 : 8,
-                      backgroundColor: i === activeStep ?
-                        (step.color === 'emerald' ? '#10B981' :
-                         step.color === 'amber' ? '#F59E0B' :
-                         step.color === 'blue' ? '#3B82F6' : '#A855F7')
-                        : '#334155'
-                    }}
-                  />
-                ))}
+              {/* Scroll Progress */}
+              <div className="mt-12 w-32 h-1 bg-white/10 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-emerald-500 origin-left"
+                  style={{ scaleX: smoothProgress }}
+                />
               </div>
             </div>
-          </motion.div>
-
-          {/* Right: Scrolling Text Cards */}
-          <div className="space-y-[60vh] pt-[25vh] pb-[50vh]">
-            {steps.map((step, i) => {
-              const Icon = step.icon;
-              const isActive = i === activeStep;
-
-              return (
-                <motion.div
-                  key={i}
-                  className={`p-6 lg:p-8 rounded-2xl border transition-all duration-500 ${
-                    isActive
-                      ? `bg-slate-900/90 ${step.borderClass} shadow-2xl`
-                      : 'bg-slate-900/30 border-slate-800/50'
-                  }`}
-                  initial={{ opacity: 0.3, x: 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: false, amount: 0.5 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="flex items-start gap-4">
-                    <motion.div
-                      className={`p-3 rounded-xl ${step.bgClass} shrink-0`}
-                      animate={{
-                        scale: isActive ? 1.1 : 1,
-                        boxShadow: isActive ? `0 0 30px ${step.color === 'emerald' ? 'rgba(16, 185, 129, 0.3)' :
-                                                         step.color === 'amber' ? 'rgba(245, 158, 11, 0.3)' :
-                                                         step.color === 'blue' ? 'rgba(59, 130, 246, 0.3)' :
-                                                         'rgba(168, 85, 247, 0.3)'}` : 'none'
-                      }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <Icon className={`w-6 h-6 ${step.iconClass}`} />
-                    </motion.div>
-                    <div>
-                      <div className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-2">
-                        Step {i + 1}
-                      </div>
-                      <h3 className="text-xl lg:text-2xl font-bold text-white mb-3">{step.title}</h3>
-                      <p className="text-slate-400 leading-relaxed text-sm lg:text-base">{step.description}</p>
-
-                      {/* Progress line for active step */}
-                      {isActive && (
-                        <motion.div
-                          className={`mt-4 h-0.5 rounded-full ${step.bgClass.replace('/20', '')}`}
-                          initial={{ width: 0 }}
-                          animate={{ width: '100%' }}
-                          transition={{ duration: 2, ease: "linear" }}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
           </div>
+        </div>
+
+        {/* Step Number Watermark */}
+        <div className="absolute bottom-8 right-8 font-mono text-[20vw] leading-none text-white/[0.02] pointer-events-none select-none">
+          0{activeStep + 1}
         </div>
       </div>
     </section>
   );
 }
 
-/**
- * AIReasoningToast - Shows the "thinking" process of the AI
- * Creates transparency and trust by revealing MCP actions
- */
+// --- EXPORTS FOR OTHER COMPONENTS ---
+
 export function AIReasoningToast({
   steps,
   isActive = false,
@@ -488,9 +493,9 @@ export function AIReasoningToast({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
-      className="fixed bottom-24 right-6 z-50 bg-slate-900/95 backdrop-blur-xl border border-slate-700 rounded-xl p-4 shadow-2xl min-w-[300px]"
+      className="fixed bottom-24 right-6 z-50 bg-[#0A0A0A]/95 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl min-w-[300px]"
     >
-      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-800">
+      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-white/10">
         <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
         <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest">AI Processing</span>
       </div>
@@ -506,10 +511,10 @@ export function AIReasoningToast({
             }}
             className="flex items-center justify-between gap-4"
           >
-            <span className={visibleSteps.includes(i) ? 'text-slate-300' : 'text-slate-600'}>
+            <span className={visibleSteps.includes(i) ? 'text-white/80' : 'text-white/20'}>
               {step.action}
             </span>
-            <span className="text-slate-500">{step.duration}</span>
+            <span className="text-white/30">{step.duration}</span>
           </motion.div>
         ))}
       </div>
@@ -517,9 +522,6 @@ export function AIReasoningToast({
   );
 }
 
-/**
- * BentoGrid - The award-winning modular layout pattern
- */
 export function BentoGrid({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ${className}`}>
@@ -557,7 +559,7 @@ export function BentoCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       className={`
-        bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-6
+        bg-[#0A0A0A] backdrop-blur-sm border border-white/10 rounded-xl p-6
         hover:border-emerald-500/30 transition-all duration-300
         ${colSpanClasses[colSpan]} ${rowSpanClasses[rowSpan]} ${className}
       `}
