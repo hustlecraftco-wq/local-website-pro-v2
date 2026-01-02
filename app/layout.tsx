@@ -1,5 +1,4 @@
 import Navbar from "@/components/ui/Navbar";
-import Robot from "@/components/ui/Robot";
 import ChatWidget from "@/components/ui/ChatWidget";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
@@ -74,7 +73,6 @@ export default function RootLayout({
         
         {/* Navbar sits on top */}
         <Navbar />
-        <Robot showRobot={true} isLoaded={true} />
         <ChatWidget />
 
         {/* The Hero and Page Content */}

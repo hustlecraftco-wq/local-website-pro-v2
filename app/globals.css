@@ -8,12 +8,29 @@
   --background-end-rgb: 5, 5, 5;
 }
 
+/* Critical: Override native smooth scroll to prevent Lenis conflicts */
+html {
+  scroll-behavior: auto !important;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: #050505;
   font-family: var(--font-inter), sans-serif;
   overflow-x: hidden;
-  scroll-behavior: smooth;
+}
+
+/* Lenis scroll container */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
 .glass-panel {

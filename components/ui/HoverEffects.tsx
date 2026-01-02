@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useRef, useState, useEffect } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export function HoverGlow({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -212,5 +212,134 @@ export function HoverMagnetic({
     >
       {children}
     </motion.div>
+  );
+}
+
+/**
+ * SpotlightCard - The "award-winning" cursor-following glow effect
+ * Creates a radial gradient that follows the mouse, illuminating card borders
+ * This is a hallmark of premium 2025 fintech interfaces
+ */
+export function SpotlightCard({ 
+  children, 
+  className = "",
+  spotlightColor = "rgba(16, 185, 129, 0.15)"
+}: { 
+  children: ReactNode; 
+  className?: string;
+  spotlightColor?: string;
+}) {
+  const divRef = useRef<HTMLDivElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current) return;
+    
+    const rect = divRef.current.getBoundingClientRect();
+    setPosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  const handleMouseEnter = () => {
+    setIsFocused(true);
+    setOpacity(1);
+  };
+
+  const handleMouseLeave = () => {
+    setIsFocused(false);
+    setOpacity(0);
+  };
+
+  return (
+    <div
+      ref={divRef}
+      className={`relative overflow-hidden ${className}`}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Spotlight Overlay */}
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 40%)`,
+        }}
+      />
+      
+      {/* Border Glow Effect */}
+      <div
+        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-300"
+        style={{
+          opacity: opacity * 0.5,
+          background: `radial-gradient(400px circle at ${position.x}px ${position.y}px, rgba(16, 185, 129, 0.4), transparent 40%)`,
+          mask: 'linear-gradient(black, black) content-box, linear-gradient(black, black)',
+          maskComposite: 'exclude',
+          WebkitMaskComposite: 'xor',
+          padding: '1px',
+        }}
+      />
+      
+      {children}
+    </div>
+  );
+}
+
+/**
+ * AnimatedCounter - Numbers that tick up when in view
+ * Essential for making stats feel "alive"
+ */
+export function AnimatedCounter({ 
+  value, 
+  duration = 2,
+  prefix = "",
+  suffix = "",
+  className = ""
+}: { 
+  value: number;
+  duration?: number;
+  prefix?: string;
+  suffix?: string;
+  className?: string;
+}) {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          let startTime: number;
+          const animate = (currentTime: number) => {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / (duration * 1000), 1);
+            const eased = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+            setCount(Math.floor(eased * value));
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              setCount(value);
+            }
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [value, duration, hasAnimated]);
+
+  return (
+    <span ref={ref} className={className}>
+      {prefix}{count.toLocaleString()}{suffix}
+    </span>
   );
 }

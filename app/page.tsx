@@ -4,12 +4,13 @@ import Demos from "@/components/sections/Demos";
 import Features from "@/components/sections/Features"; 
 import About from "@/components/sections/About";
 import Pricing from "@/components/sections/Pricing"; 
-import Navbar from "@/components/ui/Navbar";
+import Robot from "@/components/ui/Robot";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-kc-dark text-white selection:bg-kc-accent selection:text-white">
-      <Navbar />
+      {/* Robot only appears on main page */}
+      <Robot showRobot={true} isLoaded={true} />
       
       {/* 1. HOOK */}
       <Hero />
