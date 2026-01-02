@@ -46,7 +46,7 @@ export default function SpeedComparison() {
               loop
               muted
               playsInline
-              className="w-full h-full object-cover opacity-30" 
+              className="w-full h-full object-cover opacity-60" 
             >
               {/* UPDATED PATH: Directly in public folder */}
               <source src="/liquid-clock.mp4" type="video/mp4" />

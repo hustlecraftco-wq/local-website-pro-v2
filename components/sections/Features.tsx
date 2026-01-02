@@ -44,8 +44,8 @@ export default function Features() {
               loop
               muted
               playsInline
-              // Opacity set low (20%) so the code/text remains the focus
-              className="w-full h-full object-cover opacity-20" 
+              // Opacity set low (60%) so the code/text remains the focus
+              className="w-full h-full object-cover opacity-60" 
             >
               {/* Ensure file is named exactly "tech background.mp4" in public folder */}
               <source src="/tech-background.mp4" type="video/mp4" />
