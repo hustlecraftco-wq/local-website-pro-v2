@@ -1,117 +1,535 @@
 "use client";
-import { ChartIcon, LockIcon, TrendingIcon, CalculatorIcon, DollarIcon } from "./icons";
 
-export default function FinanceDemoPage() {
+import { Suspense } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { TrendingUp, Shield, Zap, Target, ArrowRight, Lock, BarChart3, PieChart, Briefcase, Award, Users, DollarSign } from "lucide-react";
+
+// Premium UI Components
+import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
+import CustomCursor from "@/components/ui/CustomCursor";
+import { AnimatedGradient } from "@/components/ui/GradientNoise";
+import MagneticButton from "@/components/ui/MagneticButton";
+import { TextRevealWords, TextRevealGradient } from "@/components/ui/TextReveal";
+import ScrollReveal, { ScrollRevealStagger, ScrollRevealScale } from "@/components/ui/ScrollReveal";
+import Parallax, { ParallaxText, ParallaxScale } from "@/components/ui/Parallax";
+import { HoverGlow, HoverTilt, HoverLift, HoverBorderGlow } from "@/components/ui/HoverEffects";
+
+// Finance Components
+import ROICalculator from "@/components/finance/ROICalculator";
+import QualificationBot from "@/components/finance/QualificationBot";
+import PortfolioDashboard from "@/components/finance/PortfolioDashboard";
+import AutomationToggle from "@/components/finance/AutomationToggle";
+
+export default function ApexWealthManagement() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-900 via-emerald-950 to-gray-900 text-white">
-      <HeroSection />
-      <ROISection />
-      <ServicesSection />
-      <ClientPortalSection />
-      <ConsultationSection />
-    </main>
+    <SmoothScrollProvider>
+      <main className="relative min-h-screen bg-[#0A1628] text-slate-200 selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden">
+        
+        {/* Premium Typography */}
+        <style jsx global>{`
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+          
+          * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+        `}</style>
+
+        {/* Premium Background */}
+        <AnimatedGradient />
+
+        {/* Custom Cursor */}
+        <CustomCursor />
+
+        {/* Automation Toggle */}
+        <AutomationToggle />
+
+        {/* AI Chatbot */}
+        <QualificationBot />
+
+        {/* Sections */}
+        <HeroNav />
+        <HeroSection />
+        <StatsBar />
+        <ROISection />
+        <ServicesGrid />
+        <ClientPortalSection />
+        <TrustSignals />
+        <FinalCTA />
+        <Footer />
+      </main>
+    </SmoothScrollProvider>
   );
 }
 
+// Navigation
+function HeroNav() {
+  return (
+    <motion.nav 
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+      className="fixed top-0 left-0 right-0 z-50 bg-[#0A1628]/60 backdrop-blur-2xl border-b border-slate-700/30"
+    >
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <HoverGlow>
+          <div className="flex items-center gap-3 cursor-pointer">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/50">
+              <BarChart3 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="font-bold text-white text-lg">Apex Wealth</div>
+              <div className="text-[10px] text-slate-400 font-mono tracking-widest">MANAGEMENT GROUP</div>
+            </div>
+          </div>
+        </HoverGlow>
+        
+        <div className="hidden md:flex gap-8 text-sm font-semibold text-slate-400">
+          <a href="#services" className="hover:text-emerald-400 transition-colors">Services</a>
+          <a href="#calculator" className="hover:text-emerald-400 transition-colors">ROI Calculator</a>
+          <a href="#portal" className="hover:text-emerald-400 transition-colors">Client Portal</a>
+        </div>
+
+        <MagneticButton className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-emerald-900/30">
+          Get Started
+          <ArrowRight className="w-4 h-4" />
+        </MagneticButton>
+      </div>
+    </motion.nav>
+  );
+}
+
+// Hero Section - PREMIUM VERSION
 function HeroSection() {
   return (
-    <section className="max-w-7xl mx-auto px-4 py-32">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <h1 className="text-7xl font-bold mb-6">
-            Build<br />
-            <span className="bg-gradient-to-r from-emerald-400 to-green-300 bg-clip-text text-transparent">Real Wealth</span>
-          </h1>
-          <p className="text-xl text-gray-300 mb-8">Data-driven wealth management. Tax optimization. Retirement planning. Let numbers work for you.</p>
-          <button className="px-10 py-4 rounded-lg bg-emerald-500 text-white font-bold text-lg hover:bg-emerald-400 transition-colors">Schedule Consultation</button>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+      
+      {/* Spline 3D Background - PARALLAX - PLACEHOLDER */}
+      <Parallax speed={0.5} className="absolute inset-0 z-0">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A1628]/50 to-[#0A1628] z-10"></div>
+          
+          {/* PLACEHOLDER - User will replace with Spline scene */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-slate-700/20 text-sm font-mono text-center">
+              [3D Financial Network Visualization]<br />
+              <span className="text-xs">Replace with your Spline scene URL</span>
+            </div>
+          </div>
         </div>
-        <div className="h-96 rounded-2xl border border-gray-700 bg-gradient-to-br from-emerald-900/30 to-gray-800 flex items-center justify-center">
-          [Hero Chart]
+      </Parallax>
+
+      <div className="relative z-20 max-w-7xl mx-auto px-6 py-32">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          
+          {/* Left: Premium Text Reveals */}
+          <div>
+            <ScrollReveal delay={0.2}>
+              <HoverGlow>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-8 backdrop-blur-sm">
+                  <Shield className="w-4 h-4" />
+                  $850M Assets Under Management
+                </div>
+              </HoverGlow>
+            </ScrollReveal>
+
+            <h1 className="text-6xl md:text-7xl font-black text-white leading-[1.1] mb-6">
+              <TextRevealWords delay={0.3} staggerDelay={0.08}>
+                Build Wealth
+              </TextRevealWords>
+              <br />
+              <TextRevealGradient delay={0.6} className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-300 to-amber-400">
+                That Compounds
+              </TextRevealGradient>
+            </h1>
+
+            <ScrollReveal delay={0.9}>
+              <ParallaxText speed={0.2}>
+                <p className="text-xl text-slate-400 leading-relaxed mb-10 max-w-xl">
+                  Data-driven wealth management powered by AI. Portfolio optimization, tax efficiency, and 24/7 access to your financial future.
+                </p>
+              </ParallaxText>
+            </ScrollReveal>
+
+            <ScrollReveal delay={1.1}>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <HoverGlow>
+                  <MagneticButton 
+                    className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-2xl shadow-emerald-900/50"
+                  >
+                    Schedule Free Audit
+                  </MagneticButton>
+                </HoverGlow>
+                
+                <HoverBorderGlow>
+                  <button className="px-8 py-4 rounded-xl border-2 border-slate-700 hover:border-emerald-500 text-slate-300 hover:text-white font-bold transition-all backdrop-blur-sm">
+                    View Case Studies
+                  </button>
+                </HoverBorderGlow>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Right: Live Data Panel with 3D Tilt */}
+          <ScrollRevealScale delay={0.5}>
+            <HoverTilt intensity={5}>
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-amber-500/20 blur-3xl -z-10"></div>
+                
+                <HoverLift>
+                  <div className="bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
+                    <div className="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+                      <div className="text-xs font-mono text-slate-500 uppercase tracking-widest">Portfolio Performance</div>
+                      <div className="flex items-center gap-2 text-xs text-emerald-400">
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                        Live
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <LiveStat label="12-Month Return" value="+12.4%" positive />
+                      <LiveStat label="Sharpe Ratio" value="1.42" />
+                      <LiveStat label="Tax Savings YTD" value="$18.4K" positive />
+                      <LiveStat label="Client NPS" value="94" positive />
+                    </div>
+
+                    <div className="bg-slate-950 rounded-xl p-4 border border-slate-800">
+                      <div className="text-xs font-mono text-slate-500 mb-3">GROWTH TRAJECTORY</div>
+                      <div className="h-24 flex items-end justify-between gap-1">
+                        {[42, 48, 55, 52, 61, 58, 67, 71, 78, 82, 89, 94].map((height, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ height: 0 }}
+                            whileInView={{ height: `${height}%` }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.05 + 0.5, duration: 0.4 }}
+                            className="flex-1 bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </HoverLift>
+              </div>
+            </HoverTilt>
+          </ScrollRevealScale>
         </div>
       </div>
+
+      {/* Scroll indicator */}
+      <ScrollReveal delay={1.5}>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="flex flex-col items-center gap-2 text-slate-500"
+          >
+            <span className="text-xs font-mono uppercase tracking-widest">Scroll</span>
+            <div className="w-[2px] h-12 bg-gradient-to-b from-emerald-500/50 to-transparent"></div>
+          </motion.div>
+        </div>
+      </ScrollReveal>
     </section>
   );
 }
 
+// Stats Bar - Premium version with hover effects
+function StatsBar() {
+  return (
+    <ParallaxText speed={0.1}>
+      <div className="relative bg-slate-900/50 backdrop-blur-xl border-y border-slate-800/50 py-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <HoverGlow><StatItem icon={DollarSign} value="$850M" label="AUM" /></HoverGlow>
+            <HoverGlow><StatItem icon={Users} value="1,200+" label="Clients" /></HoverGlow>
+            <HoverGlow><StatItem icon={TrendingUp} value="12.4%" label="Avg Return" /></HoverGlow>
+            <HoverGlow><StatItem icon={Award} value="98%" label="Retention" /></HoverGlow>
+          </div>
+        </div>
+      </div>
+    </ParallaxText>
+  );
+}
+
+// ROI Calculator Section - Premium version
 function ROISection() {
-  const stats = [
-    { label: "Avg Client ROI", value: "12.4%" },
-    { label: "Assets Under Management", value: "$850M" },
-    { label: "Tax Savings", value: "$2.1M" },
-    { label: "Client Retention", value: "98%" },
-  ];
-
   return (
-    <section className="max-w-7xl mx-auto px-4 py-20 border-t border-gray-800">
-      <h2 className="text-5xl font-bold text-center mb-12">Performance That Speaks</h2>
-      <div className="grid md:grid-cols-4 gap-8">
-        {stats.map((stat, i) => (
-          <div key={i} className="p-8 rounded-2xl border border-gray-700 bg-gray-800/50 text-center">
-            <p className="text-4xl font-bold text-emerald-400 mb-2">{stat.value}</p>
-            <p className="text-sm text-gray-400">{stat.label}</p>
+    <section id="calculator" className="relative py-32 px-6">
+      <Parallax speed={-0.2} className="absolute top-0 right-0 w-1/3 h-1/3 bg-emerald-500/5 rounded-full blur-[120px]" />
+      
+      <div className="relative max-w-7xl mx-auto">
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <HoverGlow>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                <Zap className="w-4 h-4" />
+                Instant Projections
+              </div>
+            </HoverGlow>
+            
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
+              <TextRevealWords staggerDelay={0.06}>
+                See Your Financial Future
+              </TextRevealWords>
+            </h2>
+            
+            <ParallaxText speed={0.1}>
+              <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+                Our ROI calculator uses real market data and tax optimization strategies to project your wealth growth.
+              </p>
+            </ParallaxText>
           </div>
-        ))}
+        </ScrollReveal>
+
+        <ScrollRevealScale delay={0.2}>
+          <HoverLift>
+            <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-12 shadow-2xl">
+              <ROICalculator />
+            </div>
+          </HoverLift>
+        </ScrollRevealScale>
       </div>
     </section>
   );
 }
 
-function ServicesSection() {
+// Services Grid - Premium version with 3D tilt cards
+function ServicesGrid() {
   const services = [
-    { icon: ChartIcon, title: "Wealth Management", desc: "Custom portfolio strategies" },
-    { icon: TrendingIcon, title: "Tax Optimization", desc: "Minimize liabilities legally" },
-    { icon: CalculatorIcon, title: "Retirement Planning", desc: "Secure your future" },
-    { icon: DollarIcon, title: "Estate Planning", desc: "Protect your legacy" },
+    {
+      icon: BarChart3,
+      title: "Wealth Management",
+      description: "Custom portfolio strategies aligned with your goals and risk tolerance",
+      features: ["Asset allocation", "Rebalancing", "Performance tracking"]
+    },
+    {
+      icon: Shield,
+      title: "Tax Optimization",
+      description: "Strategic planning to minimize tax burden and maximize after-tax returns",
+      features: ["Tax-loss harvesting", "Roth conversions", "Estate planning"]
+    },
+    {
+      icon: Target,
+      title: "Retirement Planning",
+      description: "Comprehensive roadmap to financial independence with income projections",
+      features: ["401(k) optimization", "Social Security planning", "Healthcare costs"]
+    },
+    {
+      icon: PieChart,
+      title: "Portfolio Analytics",
+      description: "Real-time insights and reporting on your portfolio performance",
+      features: ["Risk analysis", "Benchmark comparison", "Custom reporting"]
+    }
   ];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-20">
-      <h2 className="text-5xl font-bold text-center mb-12">Our Services</h2>
-      <div className="grid md:grid-cols-4 gap-8">
-        {services.map((service, i) => (
-          <div key={i} className="p-8 rounded-2xl border border-gray-700 bg-gray-800/50 hover:border-emerald-500 transition-all">
-            <service.icon className="w-12 h-12 text-emerald-400 mb-4" />
-            <h3 className="text-xl font-bold mb-2">{service.title}</h3>
-            <p className="text-sm text-gray-400">{service.desc}</p>
-          </div>
-        ))}
+    <section id="services" className="relative py-32 px-6 border-t border-slate-800/50">
+      <Parallax speed={0.3} className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-amber-500/5 rounded-full blur-[120px]" />
+      
+      <div className="relative max-w-7xl mx-auto">
+        <ScrollReveal>
+          <h2 className="text-5xl md:text-6xl font-black text-white text-center mb-16">
+            <TextRevealWords staggerDelay={0.05}>
+              Comprehensive Financial Services
+            </TextRevealWords>
+          </h2>
+        </ScrollReveal>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {services.map((service, i) => (
+            <ScrollReveal key={i} delay={i * 0.1} direction="up">
+              <HoverTilt intensity={8}>
+                <HoverBorderGlow>
+                  <div className="h-full bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-2xl p-8 transition-all hover:-translate-y-1">
+                    <HoverGlow>
+                      <div className="p-4 bg-emerald-500/10 rounded-xl inline-block mb-6">
+                        <service.icon className="w-8 h-8 text-emerald-400" />
+                      </div>
+                    </HoverGlow>
+                    
+                    <h3 className="text-2xl font-bold text-white mb-4">{service.title}</h3>
+                    <p className="text-slate-400 mb-6 leading-relaxed">{service.description}</p>
+                    
+                    <ul className="space-y-2">
+                      {service.features.map((feature, j) => (
+                        <motion.li 
+                          key={j}
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1 + j * 0.05 }}
+                          className="flex items-center gap-2 text-sm text-slate-400"
+                        >
+                          <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
+                          {feature}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+                </HoverBorderGlow>
+              </HoverTilt>
+            </ScrollReveal>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
+// Client Portal Section - Premium version
 function ClientPortalSection() {
   return (
-    <section className="max-w-6xl mx-auto px-4 py-20 border-t border-gray-800">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <h2 className="text-5xl font-bold mb-6">Secure Client Portal</h2>
-          <p className="text-lg text-gray-300 mb-6">24/7 access to your portfolio, documents, and real-time performance metrics.</p>
-          <ul className="space-y-4">
-            {["Real-time portfolio tracking", "Tax document access", "Secure messaging", "Performance reports"].map((item, i) => (
-              <li key={i} className="flex items-center gap-3">
-                <LockIcon className="w-5 h-5 text-emerald-400" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="h-80 rounded-2xl border border-gray-700 bg-gray-800 flex items-center justify-center">
-          [Portal Preview]
-        </div>
+    <section id="portal" className="relative py-32 px-6">
+      <Parallax speed={-0.3} className="absolute top-1/2 right-0 w-1/2 h-1/2 bg-emerald-500/10 rounded-full blur-[150px]" />
+      
+      <div className="relative max-w-7xl mx-auto">
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <HoverGlow>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                <Lock className="w-4 h-4" />
+                Bank-Grade Security
+              </div>
+            </HoverGlow>
+            
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
+              <TextRevealWords staggerDelay={0.05}>
+                Your Wealth, Always Accessible
+              </TextRevealWords>
+            </h2>
+            
+            <ParallaxText speed={0.15}>
+              <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+                24/7 access to your portfolio, documents, and real-time performance metrics through our secure client portal.
+              </p>
+            </ParallaxText>
+          </div>
+        </ScrollReveal>
+
+        <ParallaxScale scaleRange={[0.95, 1.05]}>
+          <PortfolioDashboard />
+        </ParallaxScale>
       </div>
     </section>
   );
 }
 
-function ConsultationSection() {
+// Trust Signals - Premium version
+function TrustSignals() {
   return (
-    <section className="max-w-5xl mx-auto px-4 py-20">
-      <div className="bg-gradient-to-r from-emerald-500 to-green-500 rounded-2xl p-12 text-center">
-        <h2 className="text-5xl font-bold mb-6 text-white">Start Building Wealth Today</h2>
-        <p className="text-xl mb-8 text-white/90">Free financial analysis. No obligation.</p>
-        <button className="px-10 py-4 rounded-lg bg-white text-emerald-600 font-bold text-lg hover:bg-gray-100 transition-colors">Book Free Consultation</button>
+    <ScrollReveal>
+      <div className="relative py-20 px-6 border-t border-slate-800/50">
+        <ParallaxText speed={0.2}>
+          <div className="max-w-5xl mx-auto text-center">
+            <HoverGlow>
+              <blockquote className="text-2xl md:text-3xl font-light text-slate-300 leading-relaxed mb-8">
+                "Apex transformed our retirement strategy. Their AI-powered insights helped us save <span className="text-emerald-400 font-semibold">$47K in taxes</span> last year alone."
+              </blockquote>
+            </HoverGlow>
+            
+            <HoverTilt intensity={3}>
+              <div className="flex items-center justify-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full border border-emerald-500/30"></div>
+                <div className="text-left">
+                  <div className="font-bold text-white">Michael Chen</div>
+                  <div className="text-sm text-slate-400">Tech Executive, $2.4M Portfolio</div>
+                </div>
+              </div>
+            </HoverTilt>
+          </div>
+        </ParallaxText>
       </div>
-    </section>
+    </ScrollReveal>
+  );
+}
+
+// Final CTA - Premium version
+function FinalCTA() {
+  return (
+    <div className="relative py-32 px-6">
+      <Parallax speed={0.4} className="absolute top-0 left-0 w-1/2 h-1/2 bg-emerald-500/10 rounded-full blur-[150px]" />
+      <Parallax speed={-0.4} className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-amber-500/10 rounded-full blur-[150px]" />
+      
+      <ScrollRevealScale>
+        <HoverLift>
+          <div className="relative max-w-4xl mx-auto bg-gradient-to-r from-emerald-600 to-amber-500 rounded-3xl p-12 md:p-16 text-center overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-amber-400/20 animate-pulse"></div>
+            
+            <div className="relative z-10">
+              <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+                <TextRevealWords staggerDelay={0.04}>
+                  Ready to Build Real Wealth?
+                </TextRevealWords>
+              </h2>
+              
+              <p className="text-xl text-white/90 mb-10">
+                Schedule a free 30-minute portfolio audit. No obligation, just insights.
+              </p>
+              
+              <HoverGlow>
+                <MagneticButton 
+                  className="bg-white hover:bg-slate-100 text-slate-900 px-10 py-5 rounded-xl font-bold text-lg shadow-2xl"
+                  strength={0.4}
+                >
+                  Book Free Consultation
+                </MagneticButton>
+              </HoverGlow>
+            </div>
+          </div>
+        </HoverLift>
+      </ScrollRevealScale>
+    </div>
+  );
+}
+
+// Footer - Premium version
+function Footer() {
+  return (
+    <footer className="relative py-12 px-6 border-t border-slate-800/50 bg-slate-950/50 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+        <HoverGlow>
+          <div>
+            <div className="font-bold text-white text-lg mb-1">Apex Wealth Management</div>
+            <div className="text-xs text-slate-500 font-mono">SEC Registered Investment Advisor</div>
+          </div>
+        </HoverGlow>
+        
+        <div className="text-sm text-slate-500">
+          © 2026 Apex Wealth. All rights reserved. | Built by{" "}
+          <a 
+            href="https://localwebsitepro.com" 
+            className="text-emerald-400 hover:text-emerald-300 transition-colors font-semibold"
+          >
+            LocalWebsitePro
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// Helper Components
+function LiveStat({ label, value, positive = false }: { label: string; value: string; positive?: boolean }) {
+  return (
+    <HoverLift>
+      <div className="bg-slate-950/50 backdrop-blur-sm rounded-xl p-4 border border-slate-800/50">
+        <div className="text-[10px] font-mono text-slate-500 uppercase mb-1">{label}</div>
+        <div className={`text-2xl font-mono font-bold ${positive ? 'text-emerald-400' : 'text-white'}`}>
+          {value}
+        </div>
+      </div>
+    </HoverLift>
+  );
+}
+
+function StatItem({ icon: Icon, value, label }: { icon: any; value: string; label: string }) {
+  return (
+    <div className="text-center">
+      <HoverGlow>
+        <Icon className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
+      </HoverGlow>
+      <div className="text-3xl font-mono font-bold text-white mb-1">{value}</div>
+      <div className="text-sm text-slate-400 uppercase tracking-wider">{label}</div>
+    </div>
   );
 }
