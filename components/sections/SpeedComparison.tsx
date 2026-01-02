@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Zap, Activity, Database, Cpu, HardHat, Terminal, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Zap, Activity, Database, Cpu, HardHat, Terminal, ArrowRight, CheckCircle2, MessageSquare } from "lucide-react";
 
 export default function SpeedComparison() {
   const [startAnim, setStartAnim] = useState(false);
@@ -63,7 +63,7 @@ export default function SpeedComparison() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20 items-end">
           <div>
             <div className="inline-block px-3 py-1 bg-kc-accent/10 border border-kc-accent/30 text-kc-accent text-xs font-black tracking-[0.3em] uppercase mb-6">
-              System Architecture: 2025 Standard
+              System Architecture: 2026 Standard
             </div>
             <h2 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-[0.9]">
               NOT A WEBSITE.<br/>
@@ -145,11 +145,11 @@ export default function SpeedComparison() {
                 Most agencies stop at the surface. I optimize the parts you can't see. My code is clean, documented, and built for 2030, not 2010.
               </p>
               <div className="space-y-2">
-                 {['100/100 Lighthouse Scores', 'Next.js 15 Static-First', 'Semantic HTML5 Architecture', 'Edge-Network Delivery'].map((stat) => (
-                   <div key={stat} className="flex items-center gap-2 text-white font-mono text-[11px] uppercase tracking-widest">
-                     <div className="w-1.5 h-1.5 bg-kc-accent"></div> {stat}
-                   </div>
-                 ))}
+                  {['100/100 Lighthouse Scores', 'Next.js 15 Static-First', 'Semantic HTML5 Architecture', 'Edge-Network Delivery'].map((stat) => (
+                    <div key={stat} className="flex items-center gap-2 text-white font-mono text-[11px] uppercase tracking-widest">
+                      <div className="w-1.5 h-1.5 bg-kc-accent"></div> {stat}
+                    </div>
+                  ))}
               </div>
             </div>
 
@@ -209,10 +209,10 @@ export default function SpeedComparison() {
           </div>
 
           <div className="p-8 bg-kc-panel border border-white/10 relative group hover:border-kc-accent/50 transition-all backdrop-blur-sm">
-            <Database className="text-kc-accent w-10 h-10 mb-6" />
-            <h3 className="text-white font-black text-xl uppercase mb-4 leading-tight italic">RAG AI <br/> DISPATCH</h3>
+            <MessageSquare className="text-kc-accent w-10 h-10 mb-6" />
+            <h3 className="text-white font-black text-xl uppercase mb-4 leading-tight italic">AI RECEPTIONIST <br/> DISPATCH</h3>
             <p className="text-kc-muted text-sm leading-relaxed mb-6">
-              AI that actually knows your pricing and service area. It handles midnight calls and books jobs while you sleep—grounded in your data.
+              An AI that never sleeps. It instantly texts back missed calls, qualifies leads, and books appointments while you're on the job site.
             </p>
             <div className="text-kc-accent font-mono text-[10px] tracking-widest uppercase opacity-50">Status: Integrated</div>
           </div>
@@ -249,7 +249,7 @@ export default function SpeedComparison() {
             "SSL ENCRYPTION: AES-256",
             "EDGE DELIVERY: KANSAS CITY NODE",
             "LEAD SYNC: 30S LATENCY TARGET",
-            "AI MODEL: RAG GROUNDED",
+            "AI AGENT: RECEPTIONIST ACTIVE",
           ].map((text, i) => (
             <div key={i} className="flex items-center gap-3">
               <div className="w-2 h-2 bg-kc-success rounded-full animate-pulse" />
@@ -269,7 +269,7 @@ export default function SpeedComparison() {
             "SSL ENCRYPTION: AES-256",
             "EDGE DELIVERY: KANSAS CITY NODE",
             "LEAD SYNC: 30S LATENCY TARGET",
-            "AI MODEL: RAG GROUNDED",
+            "AI AGENT: RECEPTIONIST ACTIVE",
           ].map((text, i) => (
             <div key={i} className="flex items-center gap-3">
               <div className="w-2 h-2 bg-kc-success rounded-full animate-pulse" />
