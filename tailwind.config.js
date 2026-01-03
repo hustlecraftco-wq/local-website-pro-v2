@@ -1,15 +1,10 @@
-const withMT = require("@material-tailwind/react/utils/withMT");
-
 /** @type {import('tailwindcss').Config} */
-module.exports = withMT({
-  // 1. PATH PRECISION: Be specific. 
-  // Scanning "./public/**/*.html" is slow and often unnecessary in Next.js.
-  // We prioritize the App Router and your custom components.
+module.exports = {
+  // 1. PATH PRECISION: Be specific.
+  // Only scan app and components - no unused library CSS
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    // Only scan the specific flowbite-react components you use to keep CSS lean
-    "./node_modules/flowbite-react/lib/esm/**/*.js", 
   ],
   
   theme: {
@@ -46,19 +41,14 @@ module.exports = withMT({
     },
   },
   
-  // 4. PLUGINS:
-  // Flowbite is powerful, but it injects a lot of CSS. 
-  // Ensure you are only using the React components, not the raw JS.
-  plugins: [
-    require("flowbite/plugin"),
-  ],
-  
+  // 4. PLUGINS: Only add plugins that are actually used
+  plugins: [],
+
   // 5. FUTURE-PROOFING: Stop Tailwind from purging your 3D-related dynamic classes
   safelist: [
     'opacity-0',
     'opacity-100',
     'translate-y-0',
     'translate-y-10',
-    // Add any classes you trigger via GSAP or Framer Motion here
   ],
-});
+};

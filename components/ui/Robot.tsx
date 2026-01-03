@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
@@ -12,15 +12,41 @@ const RobotScene = dynamic(() => import('./RobotScene'), {
 
 export default function Robot({ showRobot, isLoaded }: { showRobot: boolean; isLoaded: boolean }) {
   const [shouldLoad3D, setShouldLoad3D] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
-    // 1.5 second delay allows other assets to settle first
+    // Load 12MB Spline only after first user interaction (click, touch, or scroll)
+    // This allows critical content to load first for better LCP/TBT
+    const handleInteraction = () => {
+      setHasInteracted(true);
+      // Clean up all listeners after first interaction
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+    };
+
+    window.addEventListener('click', handleInteraction, { passive: true });
+    window.addEventListener('touchstart', handleInteraction, { passive: true });
+    window.addEventListener('scroll', handleInteraction, { passive: true });
+
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Only start loading after user has interacted
+    if (!hasInteracted) return;
+
+    // Additional 1.5s delay after interaction to let other assets settle
     const timer = setTimeout(() => {
       setShouldLoad3D(true);
-    }, 1500); 
+    }, 1500);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [hasInteracted]);
 
   if (!showRobot || !isLoaded || !shouldLoad3D) return null;
 

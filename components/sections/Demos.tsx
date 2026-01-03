@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ExternalLink, ArrowRight, Phone, Scale, TrendingUp, Activity, Hammer, Droplets, Leaf } from "lucide-react";
 
 // --- INDUSTRY THEMES ---

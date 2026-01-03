@@ -73,16 +73,46 @@ export default function Hero() {
     if (assetTextRef.current) assetTextRef.current.textContent = "0.0s";
   };
 
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // Defer video loading until after LCP for better mobile performance
+    // requestIdleCallback ensures we don't block the main thread
+    const loadVideo = () => {
+      setShowVideo(true);
+    };
+
+    // Wait for page to be idle, or fallback to 2s delay
+    if ('requestIdleCallback' in window) {
+      (window as typeof window & { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(loadVideo, { timeout: 2000 });
+    } else {
+      setTimeout(loadVideo, 1500);
+    }
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden border-b border-white/5 bg-kc-dark">
-      {/* Background */}
+      {/* Background - Poster first strategy for LCP */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <video 
-          autoPlay muted loop playsInline 
-          className="w-full h-full object-cover opacity-90" // Adjusted opacity for readability
-        >
-          <source src="/hero-bg.mp4" type="video/mp4" />
-        </video>
+        {/* Static gradient background shows immediately (good for LCP) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-950/50 via-kc-dark to-kc-dark" />
+
+        {/* Video fades in after page load */}
+        {showVideo && (
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            onCanPlayThrough={() => setVideoLoaded(true)}
+            className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-90' : 'opacity-0'}`}
+          >
+            <source src="/hero-bg.mp4" type="video/mp4" />
+          </video>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-kc-dark via-kc-dark/40 to-blue-900/10" />
       </div>
 
