@@ -1,6 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { Zap, Activity, Database, Cpu, HardHat, Terminal, ArrowRight, CheckCircle2, MessageSquare } from "lucide-react";
+// 1. Import the Robot Component
+import Robot from "@/components/ui/Robot";
 
 export default function SpeedComparison() {
   const [startAnim, setStartAnim] = useState(false);
@@ -14,10 +16,11 @@ export default function SpeedComparison() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
+          // Optional: Stop observing once loaded to save resources
           observer.unobserve(entry.target); 
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 } // Trigger when 10% of the section is visible
     );
 
     if (containerRef.current) {
@@ -38,7 +41,11 @@ export default function SpeedComparison() {
       className="py-24 px-6 bg-kc-dark border-t border-white/10 relative overflow-hidden"
     >
       
-      {/* 1. NEW VIDEO BACKGROUND LAYER */}
+      {/* 2. THE ROBOT - Only loads when scrolled into view */}
+      {/* We pass the 'isInView' state so the internal logic of Robot knows when to fire */}
+      <Robot showRobot={true} isLoaded={isInView} />
+
+      {/* VIDEO BACKGROUND LAYER (Optional - keep or remove based on preference) */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {isInView && (
             <video
@@ -48,7 +55,6 @@ export default function SpeedComparison() {
               playsInline
               className="w-full h-full object-cover opacity-60" 
             >
-              {/* UPDATED PATH: Directly in public folder */}
               <source src="/liquid-clock.mp4" type="video/mp4" />
             </video>
         )}

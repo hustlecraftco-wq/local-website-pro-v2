@@ -5,13 +5,11 @@ import Features from "@/components/sections/Features";
 import About from "@/components/sections/About";
 import Pricing from "@/components/sections/Pricing";
 import Footer from "@/components/sections/Footer";
-import Robot from "@/components/ui/Robot";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-kc-dark text-white selection:bg-kc-accent selection:text-white">
-      {/* Robot only appears on main page */}
-      <Robot showRobot={true} isLoaded={true} />
+      {/* ROBOT REMOVED: It now lives inside <SpeedComparison /> for better performance */}
 
       {/* 1. HOOK */}
       <Hero />
