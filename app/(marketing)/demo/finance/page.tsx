@@ -19,7 +19,6 @@ import Parallax from "@/components/ui/Parallax";
 import { HoverTilt, HoverLift, SpotlightCard, AnimatedCounter } from "@/components/ui/HoverEffects";
 
 // --- DYNAMIC IMPORTS FOR PERFORMANCE ---
-// We keep these to ensure the initial load is instant.
 const ScrollytellingSection = dynamic(() => import("@/components/ui/Scrollytelling"), { ssr: false });
 const ROICalculator = dynamic(() => import("@/components/finance/ROICalculator"), { ssr: false });
 const QualificationBot = dynamic(() => import("@/components/finance/QualificationBot"), { ssr: false });
@@ -34,17 +33,17 @@ export default function ApexWealthManagement() {
     <SmoothScrollProvider>
       <main className="relative min-h-screen bg-[#0A1628] text-slate-200 selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden font-sans">
         
-        {/* Premium Background: Replaced Heavy 3D with CSS Gradient Noise */}
+        {/* Premium Background */}
         <div className="fixed inset-0 z-0 opacity-40 pointer-events-none">
              <AnimatedGradient />
         </div>
         
-        {/* Custom Cursor - Desktop Only */}
+        {/* Custom Cursor */}
         <div className="hidden lg:block">
           <CustomCursor />
         </div>
         
-        {/* Sales Tools - Hidden from clients */}
+        {/* Sales Tools */}
         <AutomationToggle />
         <QualificationBot />
 
@@ -61,10 +60,11 @@ export default function ApexWealthManagement() {
         <FinalCTA onConsultClick={() => setShowConsultationModal(true)} />
         <Footer />
 
-        {/* SEO Demo Toggle - Sales Tool */}
+        {/* SEO Demo Toggle */}
         <div className="fixed bottom-6 left-6 z-[100] hidden md:block">
           <button 
             onClick={() => setShowSEODemo(true)}
+            aria-label="View SEO Architecture"
             className="flex items-center gap-2 bg-slate-900/80 border border-emerald-500/50 text-emerald-400 px-4 py-2 rounded-full text-xs font-mono uppercase tracking-widest hover:bg-emerald-900/20 transition-all shadow-lg backdrop-blur-md"
           >
             <Eye className="w-4 h-4" />
@@ -106,7 +106,7 @@ function HeroNav({ onConsultClick }: { onConsultClick: () => void }) {
         className="fixed top-0 left-0 right-0 z-50 bg-[#0A1628]/80 backdrop-blur-2xl border-b border-slate-700/30"
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-2 md:gap-3">
+          <a href="#" className="flex items-center gap-2 md:gap-3" aria-label="Apex Wealth Management Home">
             <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/50">
               <BarChart3 className="w-4 h-4 md:w-6 md:h-6 text-white" />
             </div>
@@ -123,7 +123,7 @@ function HeroNav({ onConsultClick }: { onConsultClick: () => void }) {
           </div>
 
           <div className="flex items-center gap-3">
-            <a href="tel:+18165551234" className="hidden md:flex items-center gap-2 text-slate-400 hover:text-white text-sm">
+            <a href="tel:+18165551234" className="hidden md:flex items-center gap-2 text-slate-400 hover:text-white text-sm" aria-label="Call us">
               <Phone className="w-4 h-4" />
               (816) 555-1234
             </a>
@@ -141,6 +141,7 @@ function HeroNav({ onConsultClick }: { onConsultClick: () => void }) {
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-white"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
             </button>
@@ -174,22 +175,17 @@ function HeroNav({ onConsultClick }: { onConsultClick: () => void }) {
 }
 
 // ------------------------------------------------------------------
-// HERO SECTION (OPTIMIZED)
+// HERO SECTION
 // ------------------------------------------------------------------
 
 function HeroSection({ onConsultClick }: { onConsultClick: () => void }) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-20">
       
-      {/* OPTIMIZED BACKGROUND: Tech Grid + Glow (Zero JS Load) */}
+      {/* OPTIMIZED BACKGROUND */}
       <div className="absolute inset-0 z-0">
-        {/* Grid Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        
-        {/* Radar/Pulse Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse"></div>
-        
-        {/* Vignette */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0A1628]/0 via-[#0A1628]/50 to-[#0A1628]"></div>
       </div>
 
@@ -241,7 +237,7 @@ function HeroSection({ onConsultClick }: { onConsultClick: () => void }) {
             </ScrollReveal>
           </div>
 
-          {/* Right: Live Data Panel - Desktop Only */}
+          {/* Right: Live Data Panel */}
           <div className="hidden lg:block">
             <ScrollRevealScale delay={0.5}>
               <HoverTilt intensity={5}>
@@ -274,7 +270,7 @@ function HeroSection({ onConsultClick }: { onConsultClick: () => void }) {
         </div>
       </div>
 
-      {/* Scroll Indicator - Desktop Only */}
+      {/* Scroll Indicator */}
       <motion.div 
         className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block"
         animate={{ y: [0, 10, 0] }}
@@ -331,7 +327,7 @@ function StatsBar() {
 }
 
 // ------------------------------------------------------------------
-// HOW IT WORKS SECTION (Card Layout)
+// HOW IT WORKS SECTION
 // ------------------------------------------------------------------
 
 function HowItWorksSection() {
@@ -687,7 +683,7 @@ function Footer() {
           </div>
           
           <div>
-            <h4 className="font-bold text-white mb-4">Services</h4>
+            <h3 className="font-bold text-white mb-4">Services</h3>
             <ul className="space-y-2 text-sm text-slate-400">
               <li><a href="#services" className="hover:text-emerald-400 transition-colors">Wealth Management</a></li>
               <li><a href="#services" className="hover:text-emerald-400 transition-colors">Tax Optimization</a></li>
@@ -697,7 +693,7 @@ function Footer() {
           </div>
           
           <div>
-            <h4 className="font-bold text-white mb-4">Contact</h4>
+            <h3 className="font-bold text-white mb-4">Contact</h3>
             <ul className="space-y-2 text-sm text-slate-400">
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-emerald-400" />
@@ -752,7 +748,7 @@ function ConsultationModal({ onClose }: { onClose: () => void }) {
             <h3 className="text-xl font-bold text-white">Schedule Your Consultation</h3>
             <p className="text-sm text-white/80">Free 30-minute portfolio review</p>
           </div>
-          <button onClick={onClose} className="text-white/80 hover:text-white">
+          <button onClick={onClose} className="text-white/80 hover:text-white" aria-label="Close Modal">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -765,6 +761,7 @@ function ConsultationModal({ onClose }: { onClose: () => void }) {
                 <input
                   type="text"
                   required
+                  aria-label="Full Name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
@@ -778,6 +775,7 @@ function ConsultationModal({ onClose }: { onClose: () => void }) {
                   <input
                     type="email"
                     required
+                    aria-label="Email Address"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
@@ -789,6 +787,7 @@ function ConsultationModal({ onClose }: { onClose: () => void }) {
                   <input
                     type="tel"
                     required
+                    aria-label="Phone Number"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
@@ -801,6 +800,7 @@ function ConsultationModal({ onClose }: { onClose: () => void }) {
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Portfolio Size</label>
                 <select
                   value={formData.portfolio}
+                  aria-label="Portfolio Size"
                   onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
                   className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500"
                 >
@@ -817,6 +817,7 @@ function ConsultationModal({ onClose }: { onClose: () => void }) {
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">What are your goals?</label>
                 <textarea
                   rows={3}
+                  aria-label="Financial Goals"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-emerald-500 resize-none"
@@ -892,7 +893,7 @@ function SEODemoModal({ onClose }: { onClose: () => void }) {
               <p className="text-xs text-slate-400">Why this site ranks higher than competitors</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white"><X /></button>
+          <button onClick={onClose} className="text-slate-400 hover:text-white" aria-label="Close SEO Demo"><X /></button>
         </div>
 
         <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-800 max-h-[70vh] overflow-y-auto">

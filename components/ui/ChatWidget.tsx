@@ -63,6 +63,7 @@ export default function ChatWidget() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={() => setIsOpen(true)}
+            aria-label="Open Chat Assistant"
             className="fixed bottom-6 left-6 z-40 bg-kc-accent hover:bg-orange-600 text-white rounded-full p-4 shadow-lg transition-all"
           >
             <Bot className="w-6 h-6" />
@@ -95,6 +96,7 @@ export default function ChatWidget() {
               </div>
               <button 
                 onClick={() => setIsOpen(false)}
+                aria-label="Close Chat"
                 className="text-white hover:bg-white/20 p-1 rounded transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -138,10 +140,12 @@ export default function ChatWidget() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask me anything..." 
+                  aria-label="Chat Message Input"
                   className="flex-1 bg-[#050505] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm focus:border-kc-accent focus:outline-none transition-colors"
                 />
                 <button 
                   type="submit" 
+                  aria-label="Send Message"
                   className="p-2.5 bg-kc-accent hover:bg-orange-600 rounded-lg text-white transition-colors"
                 >
                   <Send className="w-5 h-5" />
