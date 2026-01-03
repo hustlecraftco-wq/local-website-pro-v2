@@ -8,7 +8,14 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
-  
+
+  // 1. IP PROTECTION: Strictly disable source maps in production
+  // This is the primary way to keep your 3D logic secret from "Inspect Element".
+  productionBrowserSourceMaps: false,
+
+  // 2. STEALTH: Remove Next.js identification headers
+  poweredByHeader: false,
+
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
@@ -18,31 +25,46 @@ const nextConfig = {
       },
     ],
   },
-  
+
+  // 3. GHOST ROUTING: Mask your folder structure
+  // Users see '/showcase/hvac', but code stays at '/internal/v2/hvac-complex-3d'
+  async rewrites() {
+    return [
+      {
+        source: '/showcase/:client',
+        destination: '/secret-internal-builds/:client', // Hide your real file paths
+      },
+      {
+        source: '/wp-admin', // Honeypot for WP bots
+        destination: '/api/honeypot',
+      },
+      {
+        source: '/admin',
+        destination: '/api/honeypot',
+      }
+    ];
+  },
+
   webpack: (config, { dev, isServer }) => {
-    // 1. 
     if (!dev) {
       config.optimization.usedExports = true;
     }
     
-    // 2.
     if (!isServer) {
         config.optimization.splitChunks = {
             ...config.optimization.splitChunks,
             cacheGroups: {
                 ...config.optimization.splitChunks?.cacheGroups,
-                // 
                 spline: {
                     test: /[\\/]node_modules[\\/](@splinetool|@splinetool\/runtime|@splinetool\/react-spline)[\\/]/,
                     name: 'spline-runtime',
                     chunks: 'all', 
-                    priority: 50, // 
+                    priority: 50, 
                     reuseExistingChunk: true,
                 },
             },
         };
     }
-    
     return config;
   },
 };
