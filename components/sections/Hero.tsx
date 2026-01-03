@@ -79,11 +79,11 @@ export default function Hero() {
       <div className="absolute inset-0 z-0 pointer-events-none">
         <video 
           autoPlay muted loop playsInline 
-          className="w-full h-full object-cover opacity-70" // Adjusted opacity for readability
+          className="w-full h-full object-cover opacity-90" // Adjusted opacity for readability
         >
           <source src="/hero-bg.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-kc-dark via-kc-dark/60 to-blue-900/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-kc-dark via-kc-dark/40 to-blue-900/10" />
       </div>
 
       {/* Content */}

@@ -20,7 +20,9 @@ module.exports = withMT({
         'kc-muted': '#94A3B8',
       },
       fontFamily: {
-        sans: ['var(--font-inter)'], 
+        sans: ['var(--font-inter)'],
+        serif: ['var(--font-playfair)'],
+        reading: ['var(--font-lora)'],
       },
       backgroundImage: {
         'glass': 'linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',

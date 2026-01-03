@@ -25,9 +25,10 @@ export default function Navbar() {
 
   // UPDATED LINKS: These now match the Section IDs perfectly
   const navLinks = [
-    { name: "About", href: "#about" },          // Added as requested
-    { name: "The System", href: "#features" },  // Fixed: Points to Features.tsx
-    { name: "Speed", href: "#speed" },          // Fixed: Points to SpeedComparison.tsx
+    { name: "About", href: "#about" },
+    { name: "The System", href: "#features" },
+    { name: "Demos", href: "#demos" },
+    { name: "Blog", href: "/blog" },
     { name: "Pricing", href: "#pricing" },
   ];
 

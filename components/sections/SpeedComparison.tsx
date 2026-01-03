@@ -53,7 +53,7 @@ export default function SpeedComparison() {
             </video>
         )}
         {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-kc-dark/80 via-kc-dark/50 to-kc-dark/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-kc-dark/40 via-kc-dark/90 to-kc-dark/40" />
       </div>
 
       {/* Content Wrapper */}

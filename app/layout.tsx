@@ -1,13 +1,25 @@
 import Navbar from "@/components/ui/Navbar";
 import ChatWidget from "@/components/ui/ChatWidget";
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display, Lora } from "next/font/google";
 import "./globals.css";
 
-// 1. Load Fast Font
-const inter = Inter({ 
+// 1. Load Fonts
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const lora = Lora({
+  subsets: ["latin"],
+  variable: "--font-lora",
   display: "swap",
 });
 
@@ -65,7 +77,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.variable} font-sans bg-kc-dark text-kc-text antialiased`}>
+      <body className={`${inter.variable} ${playfair.variable} ${lora.variable} font-sans bg-kc-dark text-kc-text antialiased`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

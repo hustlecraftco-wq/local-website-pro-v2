@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Check, ArrowRight, ShieldCheck, Zap, Rocket, Building2, Globe2, 
-  Server, Unlock, Target, Lock, Cpu, Terminal 
+import {
+  Check, ArrowRight, ShieldCheck, Zap, Rocket, Building2, Globe2,
+  Server, Unlock, Target, Lock, Cpu, Terminal
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Spline from '@splinetool/react-spline';
 
 // --- TYPES ---
 type BusinessSize = "starter" | "established" | "enterprise";
@@ -172,8 +173,13 @@ export default function ServicesAndPricing() {
   ];
 
   return (
-    <section className="relative min-h-screen bg-neutral-950 text-zinc-200 overflow-hidden py-24 px-4 md:px-6 font-sans antialiased selection:bg-emerald-500/30">
-      
+    <section id="pricing" className="relative min-h-screen bg-neutral-950 text-zinc-200 overflow-hidden py-24 px-4 md:px-6 font-sans antialiased selection:bg-emerald-500/30">
+
+      {/* --- SPLINE BACKGROUND SCENE --- */}
+      <div className="absolute inset-0 z-0 opacity-40 h-full w-full pointer-events-none">
+        <Spline scene="https://prod.spline.design/Np-gnO5Y5UwmUzxE/scene.splinecode" />
+      </div>
+
       {/* --- AMBIENT BACKGROUND GLOW --- */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px]" />
@@ -181,7 +187,7 @@ export default function ServicesAndPricing() {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        
+
         {/* HEADER */}
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono uppercase tracking-widest mb-6 backdrop-blur-sm">
@@ -192,7 +198,7 @@ export default function ServicesAndPricing() {
             Asset <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Engineering.</span>
           </h2>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">
-            Stop renting templates. Build a digital asset you actually own. 
+            Stop renting templates. Build a digital asset you actually own.
             Choose your build tier, then decide how you want to run it.
           </p>
         </div>
@@ -209,7 +215,7 @@ export default function ServicesAndPricing() {
                 }`}
               >
                 {activeTab === tab && (
-                  <motion.div 
+                  <motion.div
                     layoutId="activeTab"
                     className="absolute inset-0 bg-zinc-800 border border-zinc-700 rounded-lg shadow-sm"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
@@ -247,15 +253,15 @@ export default function ServicesAndPricing() {
           <div className="relative bg-zinc-900/90 border border-amber-500/20 rounded-3xl p-8 md:p-12 text-center backdrop-blur-xl overflow-hidden">
              {/* Background Decoration */}
              <Unlock className="absolute -top-12 -right-12 w-64 h-64 text-amber-500/5 rotate-12" />
-             
+
              <div className="relative z-10">
                <div className="inline-flex items-center justify-center p-3 bg-amber-500/10 rounded-xl mb-6 border border-amber-500/20">
                   <Lock className="w-6 h-6 text-amber-400" />
                </div>
                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">The "No Hostage" Protocol</h3>
                <p className="text-zinc-400 text-lg leading-relaxed max-w-2xl mx-auto">
-                  We don't believe in trapping clients. <span className="text-amber-400 font-bold">You own 100% of the code.</span> 
-                  If you ever decide to leave, we hand over the GitHub repository. 
+                  We don't believe in trapping clients. <span className="text-amber-400 font-bold">You own 100% of the code.</span>
+                  If you ever decide to leave, we hand over the GitHub repository.
                   Zero lock-in. Zero proprietary fees.
                </p>
              </div>
@@ -284,16 +290,16 @@ export default function ServicesAndPricing() {
         <div className="relative max-w-5xl mx-auto">
           {/* Scanning Line Animation */}
           <div className="absolute -inset-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent rounded-[2.5rem] opacity-30 blur-sm animate-pulse" />
-          
+
           <div className="relative bg-neutral-900 border border-purple-500/30 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-purple-900/20">
-            
+
             {/* Grid Background */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none" 
+            <div className="absolute inset-0 opacity-10 pointer-events-none"
                  style={{ backgroundImage: 'linear-gradient(#4c1d95 1px, transparent 1px), linear-gradient(90deg, #4c1d95 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
             </div>
-            
+
             <div className="grid lg:grid-cols-2 gap-12 p-8 md:p-16 relative z-10">
-              
+
               {/* Hunter Text */}
               <div className="flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-6">
@@ -303,14 +309,14 @@ export default function ServicesAndPricing() {
                     </div>
                    <span className="text-purple-400 font-mono text-xs tracking-widest uppercase">Active Intelligence</span>
                 </div>
-                
+
                 <h3 className="text-3xl md:text-5xl font-black text-white mb-6">
                   The Growth <span className="text-purple-400">Hunter.</span>
                 </h3>
-                
+
                 <p className="text-zinc-300 text-lg mb-8 leading-relaxed">
-                  Websites wait for customers. The Hunter finds them. 
-                  We deploy active OSINT scrapers to monitor local social channels, 
+                  Websites wait for customers. The Hunter finds them.
+                  We deploy active OSINT scrapers to monitor local social channels,
                   delivering hot leads before your competitors even know they exist.
                 </p>
 
@@ -362,7 +368,7 @@ export default function ServicesAndPricing() {
                         <span>84%</span>
                       </div>
                       <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
-                        <motion.div 
+                        <motion.div
                           className="h-full bg-purple-500"
                           animate={{ width: ["0%", "84%"] }}
                           transition={{ duration: 1.5, ease: "easeOut" }}
@@ -384,20 +390,19 @@ export default function ServicesAndPricing() {
 
 // --- SUB-COMPONENT: CARD ---
 function PricingCard({ option }: { option: any }) {
-  // Look up colors from the map
   const styles = colorStyles[option.color as keyof typeof colorStyles];
 
   return (
-    <div 
+    <div
       className={`group relative p-8 rounded-3xl border transition-all duration-500 flex flex-col bg-zinc-900/80 backdrop-blur-xl
-        ${option.highlight 
-          ? `${styles.border} ${styles.shadow}` 
+        ${option.highlight
+          ? `${styles.border} ${styles.shadow}`
           : "border-zinc-800 hover:border-zinc-700"
         }
         ${option.fullWidth ? "md:p-12 md:flex-row gap-12 items-center" : ""}
       `}
     >
-      {/* Dynamic Underglow (Using style map to fix JIT issue) */}
+      {/* Dynamic Underglow */}
       <div className={`absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none
         bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] ${styles.glow} via-transparent to-transparent
       `} />
@@ -409,9 +414,9 @@ function PricingCard({ option }: { option: any }) {
           </div>
           <h3 className="text-2xl font-bold text-white">{option.name}</h3>
         </div>
-        
+
         <p className="text-zinc-400 text-sm mb-6 min-h-[40px] leading-relaxed">{option.description}</p>
-        
+
         <div className="mb-8">
           <div className="text-4xl font-black text-white mb-1 tracking-tight">{option.price}</div>
           <div className="text-xs text-zinc-500 uppercase tracking-wider font-bold">{option.period}</div>
@@ -425,8 +430,8 @@ function PricingCard({ option }: { option: any }) {
       </div>
 
       <div className={`space-y-4 relative z-10 ${
-        option.fullWidth 
-          ? "md:w-2/3 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-4 md:space-y-0 pt-8 md:pt-0 border-t md:border-t-0 border-zinc-800" 
+        option.fullWidth
+          ? "md:w-2/3 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-4 md:space-y-0 pt-8 md:pt-0 border-t md:border-t-0 border-zinc-800"
           : "flex-grow pt-8 border-t border-zinc-800"
       }`}>
         {option.features.map((feature: string, fIdx: number) => (
