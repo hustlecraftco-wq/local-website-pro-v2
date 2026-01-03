@@ -6,7 +6,6 @@ import {
   Server, Unlock, Target, Lock, Cpu, Terminal
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Spline from '@splinetool/react-spline';
 
 // --- TYPES ---
 type BusinessSize = "starter" | "established" | "enterprise";
@@ -177,7 +176,6 @@ export default function ServicesAndPricing() {
 
       {/* --- SPLINE BACKGROUND SCENE --- */}
       <div className="absolute inset-0 z-0 opacity-40 h-full w-full pointer-events-none">
-        <Spline scene="https://prod.spline.design/Np-gnO5Y5UwmUzxE/scene.splinecode" />
       </div>
 
       {/* --- AMBIENT BACKGROUND GLOW --- */}

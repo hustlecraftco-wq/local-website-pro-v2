@@ -7,7 +7,6 @@ import {
   Award, Users, DollarSign, Search, Code, Eye, X, Brain, Sparkles, 
   Phone, Mail, Calendar, CheckCircle, ChevronDown
 } from "lucide-react";
-import Spline from "@splinetool/react-spline";
 import dynamic from "next/dynamic";
 
 // Premium UI Components
@@ -188,7 +187,6 @@ function HeroSection({ onConsultClick }: { onConsultClick: () => void }) {
         
         <div className="hidden lg:block absolute inset-0">
           <Suspense fallback={<div className="absolute inset-0 bg-[#0A1628]" />}>
-            <Spline
               scene="https://prod.spline.design/mTaYVjhg-f5TwC9V/scene.splinecode"
               className="absolute inset-0"
             />

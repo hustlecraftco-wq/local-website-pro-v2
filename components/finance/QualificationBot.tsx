@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, ChevronRight } from "lucide-react";
-import Spline from '@splinetool/react-spline';
 import { Suspense } from "react";
 
 type ChatStep = 'greeting' | 'portfolio' | 'goals' | 'timeframe' | 'contact' | 'complete';
@@ -114,7 +113,6 @@ export default function QualificationBot() {
         transition={{ delay: 1 }}
       >
         <Suspense fallback={<div className="w-full h-full bg-emerald-500/10" />}>
-          <Spline scene="https://prod.spline.design/5VPnYmzXWR5H-efd/scene.splinecode" />
         </Suspense>
       </motion.button>
 
