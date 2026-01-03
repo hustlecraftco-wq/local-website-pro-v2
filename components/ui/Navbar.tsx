@@ -23,7 +23,7 @@ export default function Navbar() {
     setIsModalOpen(false);
   };
 
-  // UPDATED LINKS: These now match the Section IDs perfectly
+  // UPDATED LINKS
   const navLinks = [
     { name: "About", href: "#about" },
     { name: "The System", href: "#features" },
@@ -70,10 +70,11 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Mobile Toggle */}
+          {/* Mobile Toggle - FIXED ACCESSIBILITY */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
             className="md:hidden p-2 text-white"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? <X /> : <Menu />}
           </button>
@@ -106,7 +107,12 @@ export default function Navbar() {
                     <h3 className="text-2xl font-black text-white mb-1">Let's Build Your Asset.</h3>
                     <p className="text-kc-muted text-sm">Fill this out. We'll send a personal intro via text or email shortly.</p>
                   </div>
-                  <button onClick={() => setIsModalOpen(false)} className="text-kc-muted hover:text-white">
+                  {/* Close Modal Button - FIXED ACCESSIBILITY */}
+                  <button 
+                    onClick={() => setIsModalOpen(false)} 
+                    className="text-kc-muted hover:text-white"
+                    aria-label="Close modal"
+                  >
                     <X className="w-6 h-6" />
                   </button>
                 </div>
@@ -114,17 +120,35 @@ export default function Navbar() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <label className="block text-xs font-bold text-kc-muted uppercase tracking-wider mb-2">Your Name</label>
-                    <input type="text" required placeholder="John Doe" className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-kc-accent focus:ring-0 transition-colors placeholder:text-white/20" />
+                    <input 
+                      type="text" 
+                      required 
+                      placeholder="John Doe" 
+                      aria-label="Your Name"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-kc-accent focus:ring-0 transition-colors placeholder:text-white/20" 
+                    />
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-kc-muted uppercase tracking-wider mb-2">Phone Number</label>
-                      <input type="tel" required placeholder="(555) 123-4567" className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-kc-accent focus:ring-0 transition-colors placeholder:text-white/20" />
+                      <input 
+                        type="tel" 
+                        required 
+                        placeholder="(555) 123-4567" 
+                        aria-label="Phone Number"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-kc-accent focus:ring-0 transition-colors placeholder:text-white/20" 
+                      />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-kc-muted uppercase tracking-wider mb-2">Email Address</label>
-                      <input type="email" required placeholder="john@company.com" className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-kc-accent focus:ring-0 transition-colors placeholder:text-white/20" />
+                      <input 
+                        type="email" 
+                        required 
+                        placeholder="john@company.com" 
+                        aria-label="Email Address"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-kc-accent focus:ring-0 transition-colors placeholder:text-white/20" 
+                      />
                     </div>
                   </div>
 
@@ -133,6 +157,7 @@ export default function Navbar() {
                     <textarea 
                       rows={3} 
                       placeholder="I own a plumbing company in Olathe and I'm tired of Angi leads..." 
+                      aria-label="Business Description"
                       className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-kc-accent focus:ring-0 transition-colors placeholder:text-white/20 resize-none"
                     ></textarea>
                   </div>

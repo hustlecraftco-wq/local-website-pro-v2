@@ -1,8 +1,7 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
 
 export function TextRevealWords({ 
   children, 
@@ -28,6 +27,8 @@ export function TextRevealWords({
           initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
           animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
           transition={{ delay: delay + i * staggerDelay, duration: 0.5 }}
+          // FIX: Promote to GPU layer to prevent main-thread jank
+          style={{ willChange: "transform, opacity, filter" }}
         >
           {word}&nbsp;
         </motion.span>
@@ -58,6 +59,8 @@ export function TextRevealChars({
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: delay + i * 0.03, duration: 0.3 }}
+          // FIX: Promote to GPU layer
+          style={{ willChange: "opacity" }}
         >
           {char === " " ? "\u00A0" : char}
         </motion.span>
@@ -85,7 +88,11 @@ export function TextRevealGradient({
       initial={{ backgroundPosition: "200% 0" }}
       animate={isInView ? { backgroundPosition: "0% 0" } : {}}
       transition={{ delay, duration: 1.5, ease: "easeInOut" }}
-      style={{ backgroundSize: "200% 100%" }}
+      // FIX: Promote background painting to GPU
+      style={{ 
+        backgroundSize: "200% 100%", 
+        willChange: "background-position" 
+      }}
     >
       {children}
     </motion.span>
@@ -111,6 +118,8 @@ export function TextRevealSlide({
         initial={{ clipPath: "inset(0 100% 0 0)" }}
         animate={isInView ? { clipPath: "inset(0 0% 0 0)" } : {}}
         transition={{ delay, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+        // FIX: Promote clip-path changes
+        style={{ willChange: "clip-path" }}
       >
         {children}
       </motion.div>
@@ -137,6 +146,8 @@ export function TextRevealScale({
       initial={{ scale: 0.8, opacity: 0, filter: "blur(10px)" }}
       animate={isInView ? { scale: 1, opacity: 1, filter: "blur(0px)" } : {}}
       transition={{ delay, duration: 0.6 }}
+      // FIX: Promote heavy transform/filter ops
+      style={{ willChange: "transform, opacity, filter" }}
     >
       {children}
     </motion.div>
@@ -166,6 +177,7 @@ export function TextRevealType({
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: delay + i * speed, duration: 0 }}
+          style={{ willChange: "opacity" }}
         >
           {char}
         </motion.span>
@@ -174,6 +186,7 @@ export function TextRevealType({
         className="inline-block w-[2px] h-[1em] bg-current ml-1"
         animate={{ opacity: [1, 0, 1] }}
         transition={{ duration: 0.8, repeat: Infinity }}
+        style={{ willChange: "opacity" }}
       />
     </span>
   );
