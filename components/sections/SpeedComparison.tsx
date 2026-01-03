@@ -1,13 +1,17 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { Zap, Activity, Database, Cpu, HardHat, Terminal, ArrowRight, CheckCircle2, MessageSquare } from "lucide-react";
-// 1. Import the Robot Component
-import Robot from "@/components/ui/Robot";
+import dynamic from "next/dynamic";
+
+// DYNAMIC IMPORT: Browser ignores this file until we ask for it
+const Robot = dynamic(() => import("@/components/ui/Robot"), {
+  ssr: false, 
+});
 
 export default function SpeedComparison() {
   const [startAnim, setStartAnim] = useState(false);
   
-  // Lazy Load Logic
+  // -- LAZY LOAD LOGIC --
   const containerRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
 
@@ -16,11 +20,10 @@ export default function SpeedComparison() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          // Optional: Stop observing once loaded to save resources
-          observer.unobserve(entry.target); 
+          observer.unobserve(entry.target); // Run once, then kill observer
         }
       },
-      { threshold: 0.1 } // Trigger when 10% of the section is visible
+      { threshold: 0.1 } // Load when 10% visible
     );
 
     if (containerRef.current) {
@@ -41,11 +44,13 @@ export default function SpeedComparison() {
       className="py-24 px-6 bg-kc-dark border-t border-white/10 relative overflow-hidden"
     >
       
-      {/* 2. THE ROBOT - Only loads when scrolled into view */}
-      {/* We pass the 'isInView' state so the internal logic of Robot knows when to fire */}
-      <Robot showRobot={true} isLoaded={isInView} />
+      {/* CONDITIONAL RENDER: The Firewall */}
+      {/* If not in view, this code doesn't exist in the DOM */}
+      {isInView && (
+        <Robot showRobot={true} isLoaded={true} />
+      )}
 
-      {/* VIDEO BACKGROUND LAYER (Optional - keep or remove based on preference) */}
+      {/* VIDEO BACKGROUND */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {isInView && (
             <video
@@ -58,14 +63,13 @@ export default function SpeedComparison() {
               <source src="/liquid-clock.mp4" type="video/mp4" />
             </video>
         )}
-        {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-kc-dark/40 via-kc-dark/90 to-kc-dark/40" />
       </div>
 
-      {/* Content Wrapper */}
+      {/* TEXT CONTENT */}
       <div className="max-w-6xl mx-auto relative z-10">
         
-        {/* HEADER: THE SHIFT */}
+        {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20 items-end">
           <div>
             <div className="inline-block px-3 py-1 bg-kc-accent/10 border border-kc-accent/30 text-kc-accent text-xs font-black tracking-[0.3em] uppercase mb-6">
@@ -81,11 +85,11 @@ export default function SpeedComparison() {
           </p>
         </div>
 
-        {/* THE PERFORMANCE SCHEMATIC */}
+        {/* The Performance Chart */}
         <div className="bg-kc-panel border-2 border-white/5 p-1 md:p-12 mb-20 shadow-[0_0_50px_rgba(0,0,0,0.5)] backdrop-blur-sm">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             
-            {/* THE TRACKS */}
+            {/* The Bars */}
             <div className="lg:col-span-8 space-y-12">
               <div className="space-y-4">
                 <div className="flex justify-between items-end">
@@ -116,7 +120,7 @@ export default function SpeedComparison() {
               </div>
             </div>
 
-            {/* THE TRIGGER */}
+            {/* Test Button */}
             <div className="lg:col-span-4 flex flex-col justify-center">
               {!startAnim ? (
                 <button 
@@ -137,7 +141,7 @@ export default function SpeedComparison() {
           </div>
         </div>
 
-        {/* THE PRECISION ENGINEERING SECTION */}
+        {/* Feature Grid */}
         <div className="mt-32 border-t border-white/5 pt-20">
           <div className="flex flex-col md:flex-row gap-12 items-start">
             <div className="md:w-1/3 md:sticky md:top-24">
@@ -160,20 +164,18 @@ export default function SpeedComparison() {
             </div>
 
             <div className="md:w-2/3 grid grid-cols-1 gap-4">
-              {/* Detail Card 1 */}
               <div className="p-1 bg-white/5 border border-white/10 hover:border-kc-accent/30 transition-all group backdrop-blur-md">
                 <div className="p-6 border border-white/5 flex gap-6">
                    <div className="text-kc-accent font-mono text-xl opacity-30 font-black">01</div>
                    <div>
                      <h4 className="text-white font-black uppercase italic mb-2 tracking-tight">Image Bio-Optimization</h4>
                      <p className="text-sm text-kc-muted">
-                       I don't just "upload photos." Every image is converted to <span className="text-white font-bold underline decoration-kc-accent">AVIF/WebP</span>, lazy-loaded, and serves specific sizes based on the user's phone. No wasted data. No blurry loads.
+                       I don't just "upload photos." Every image is converted to <span className="text-white font-bold underline decoration-kc-accent">AVIF/WebP</span>, lazy-loaded, and serves specific sizes based on the user's phone.
                      </p>
                    </div>
                 </div>
               </div>
 
-              {/* Detail Card 2 */}
               <div className="p-1 bg-white/5 border border-white/10 hover:border-kc-accent/30 transition-all group backdrop-blur-md">
                 <div className="p-6 border border-white/5 flex gap-6">
                    <div className="text-kc-accent font-mono text-xl opacity-30 font-black">02</div>
@@ -186,14 +188,13 @@ export default function SpeedComparison() {
                 </div>
               </div>
 
-              {/* Detail Card 3 */}
               <div className="p-1 bg-white/5 border border-white/10 hover:border-kc-accent/30 transition-all group backdrop-blur-md">
                 <div className="p-6 border border-white/5 flex gap-6">
                    <div className="text-kc-accent font-mono text-xl opacity-30 font-black">03</div>
                    <div>
                      <h4 className="text-white font-black uppercase italic mb-2 tracking-tight">Local-First Caching</h4>
                      <p className="text-kc-muted text-sm leading-relaxed">
-                        Your site is distributed across global <span className="text-white font-bold underline decoration-kc-accent">Edge Servers</span>. When a lead in KC visits your site, the data travels 10 miles, not 3,000. It feels like an app, not a webpage.
+                        Your site is distributed across global <span className="text-white font-bold underline decoration-kc-accent">Edge Servers</span>. Data travels 10 miles, not 3,000.
                      </p>
                    </div>
                 </div>
@@ -202,14 +203,13 @@ export default function SpeedComparison() {
           </div>
         </div>
 
-        {/* THE "WHY WE WIN" BLOCKS - INDUSTRIAL STYLE */}
+        {/* Benefits Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-20">
-          
           <div className="p-8 bg-kc-panel border border-white/10 relative group hover:border-kc-accent/50 transition-all backdrop-blur-sm">
             <Cpu className="text-kc-accent w-10 h-10 mb-6" />
             <h3 className="text-white font-black text-xl uppercase mb-4 leading-tight italic">SEO AS <br/> ARCHITECTURE</h3>
             <p className="text-kc-muted text-sm leading-relaxed mb-6">
-              No Yoast "tape." I build programmatic local SEO into the Next.js routes. Every KC zip code gets a pre-rendered, instant-load landing page.
+              No Yoast "tape." I build programmatic local SEO into the Next.js routes. Every zip code gets a pre-rendered landing page.
             </p>
             <div className="text-kc-accent font-mono text-[10px] tracking-widest uppercase opacity-50">Status: Automated</div>
           </div>
@@ -218,7 +218,7 @@ export default function SpeedComparison() {
             <MessageSquare className="text-kc-accent w-10 h-10 mb-6" />
             <h3 className="text-white font-black text-xl uppercase mb-4 leading-tight italic">AI RECEPTIONIST <br/> DISPATCH</h3>
             <p className="text-kc-muted text-sm leading-relaxed mb-6">
-              An AI that never sleeps. It instantly texts back missed calls, qualifies leads, and books appointments while you're on the job site.
+              An AI that never sleeps. It instantly texts back missed calls, qualifies leads, and books appointments.
             </p>
             <div className="text-kc-accent font-mono text-[10px] tracking-widest uppercase opacity-50">Status: Integrated</div>
           </div>
@@ -227,7 +227,7 @@ export default function SpeedComparison() {
             <Activity className="text-kc-accent w-10 h-10 mb-6" />
             <h3 className="text-white font-black text-xl uppercase mb-4 leading-tight italic">30-SEC <br/> CRM SYNC</h3>
             <p className="text-kc-muted text-sm leading-relaxed mb-6">
-              Leads hit your CRM in under 30 seconds. Enriched, scored, and routed. First responder wins the job. I make sure you're always first.
+              Leads hit your CRM in under 30 seconds. Enriched, scored, and routed.
             </p>
             <div className="text-kc-accent font-mono text-[10px] tracking-widest uppercase opacity-50">Status: Synchronized</div>
           </div>
@@ -236,15 +236,14 @@ export default function SpeedComparison() {
             <HardHat className="w-10 h-10 mb-6" />
             <h3 className="font-black text-xl uppercase mb-4 leading-tight italic">ZERO-RENTAL <br/> EQUITY</h3>
             <p className="font-bold text-sm leading-relaxed mb-6 text-black/80">
-              You own the code. No monthly "website rental" fees. It’s an engineered asset that builds equity for your business, not the agency.
+              You own the code. No monthly "website rental" fees. It’s an engineered asset that builds equity.
             </p>
             <div className="font-mono text-[10px] tracking-widest uppercase text-black/60 font-black">Status: Ownership</div>
           </div>
-
         </div>
       </div>
 
-      {/* SYSTEM DIAGNOSTIC TICKER */}
+      {/* Marquee Ticker */}
       <div className="mt-20 border-y border-white/5 bg-white/[0.02] py-4 overflow-hidden flex whitespace-nowrap max-w-full relative z-10 backdrop-blur-sm">
         <div className="flex animate-marquee gap-12 items-center">
           {[
@@ -265,7 +264,6 @@ export default function SpeedComparison() {
             </div>
           ))}
         </div>
-        {/* Duplicate for seamless loop */}
         <div className="flex animate-marquee gap-12 items-center ml-12" aria-hidden="true">
           {[
             "SYSTEM STATUS: OPTIMIZED",

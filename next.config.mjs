@@ -1,3 +1,9 @@
+import bundleAnalyzer from '@next/bundle-analyzer';
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
@@ -14,39 +20,31 @@ const nextConfig = {
   },
   
   webpack: (config, { dev, isServer }) => {
-    // FIX: Only enable usedExports in production to avoid the cache conflict
+    // 1. 
     if (!dev) {
       config.optimization.usedExports = true;
     }
     
+    // 2.
     if (!isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          react: {
-            name: 'react-vendors',
-            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-            priority: 40,
-            reuseExistingChunk: true,
-          },
-          vendor: {
-            name: 'vendor',
-            test: /[\\/]node_modules[\\/]/,
-            priority: 30,
-            reuseExistingChunk: true,
-          },
-          common: {
-            name: 'common',
-            minChunks: 2,
-            priority: 20,
-            reuseExistingChunk: true,
-          },
-        },
-      };
+        config.optimization.splitChunks = {
+            ...config.optimization.splitChunks,
+            cacheGroups: {
+                ...config.optimization.splitChunks?.cacheGroups,
+                // 
+                spline: {
+                    test: /[\\/]node_modules[\\/](@splinetool|@splinetool\/runtime|@splinetool\/react-spline)[\\/]/,
+                    name: 'spline-runtime',
+                    chunks: 'all', 
+                    priority: 50, // 
+                    reuseExistingChunk: true,
+                },
+            },
+        };
     }
     
     return config;
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
