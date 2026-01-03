@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   TrendingUp, Shield, Zap, Target, ArrowRight, Lock, BarChart3, PieChart, 
@@ -13,16 +13,14 @@ import dynamic from "next/dynamic";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import CustomCursor from "@/components/ui/CustomCursor";
 import { AnimatedGradient } from "@/components/ui/GradientNoise";
-import MagneticButton from "@/components/ui/MagneticButton";
 import { TextRevealWords, TextRevealGradient } from "@/components/ui/TextReveal";
 import ScrollReveal, { ScrollRevealScale } from "@/components/ui/ScrollReveal";
-import Parallax, { ParallaxText, ParallaxScale } from "@/components/ui/Parallax";
-import { HoverGlow, HoverTilt, HoverLift, HoverBorderGlow, SpotlightCard, AnimatedCounter } from "@/components/ui/HoverEffects";
+import Parallax from "@/components/ui/Parallax";
+import { HoverTilt, HoverLift, SpotlightCard, AnimatedCounter } from "@/components/ui/HoverEffects";
 
-// Dynamic import for Scrollytelling (client-only to properly integrate with Lenis smooth scroll)
+// --- DYNAMIC IMPORTS FOR PERFORMANCE ---
+// We keep these to ensure the initial load is instant.
 const ScrollytellingSection = dynamic(() => import("@/components/ui/Scrollytelling"), { ssr: false });
-
-// Finance Components (Dynamic Imports for Performance)
 const ROICalculator = dynamic(() => import("@/components/finance/ROICalculator"), { ssr: false });
 const QualificationBot = dynamic(() => import("@/components/finance/QualificationBot"), { ssr: false });
 const PortfolioDashboard = dynamic(() => import("@/components/finance/PortfolioDashboard"), { ssr: false });
@@ -34,10 +32,12 @@ export default function ApexWealthManagement() {
 
   return (
     <SmoothScrollProvider>
-      <main className="relative min-h-screen bg-[#0A1628] text-slate-200 selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden">
+      <main className="relative min-h-screen bg-[#0A1628] text-slate-200 selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden font-sans">
         
-        {/* Premium Background */}
-        <AnimatedGradient />
+        {/* Premium Background: Replaced Heavy 3D with CSS Gradient Noise */}
+        <div className="fixed inset-0 z-0 opacity-40 pointer-events-none">
+             <AnimatedGradient />
+        </div>
         
         {/* Custom Cursor - Desktop Only */}
         <div className="hidden lg:block">
@@ -174,24 +174,23 @@ function HeroNav({ onConsultClick }: { onConsultClick: () => void }) {
 }
 
 // ------------------------------------------------------------------
-// HERO SECTION
+// HERO SECTION (OPTIMIZED)
 // ------------------------------------------------------------------
 
 function HeroSection({ onConsultClick }: { onConsultClick: () => void }) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-20">
       
-      {/* Spline 3D Background - Desktop Only */}
+      {/* OPTIMIZED BACKGROUND: Tech Grid + Glow (Zero JS Load) */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A1628]/80 to-[#0A1628] z-10 pointer-events-none" />
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         
-        <div className="hidden lg:block absolute inset-0">
-          <Suspense fallback={<div className="absolute inset-0 bg-[#0A1628]" />}>
-              scene="https://prod.spline.design/mTaYVjhg-f5TwC9V/scene.splinecode"
-              className="absolute inset-0"
-            />
-          </Suspense>
-        </div>
+        {/* Radar/Pulse Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/10 rounded-full blur-[120px] animate-pulse"></div>
+        
+        {/* Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A1628]/0 via-[#0A1628]/50 to-[#0A1628]"></div>
       </div>
 
       <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-32">
