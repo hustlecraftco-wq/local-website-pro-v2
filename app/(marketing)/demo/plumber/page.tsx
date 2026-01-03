@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-// --- COMPONENTS ---
-
 const Icon = ({ name, className }: { name: string; className?: string }) => {
   const icons: Record<string, React.ReactNode> = {
     phone: <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />,
@@ -44,11 +42,11 @@ const FeatureCard = ({ icon, title, desc, delay }: { icon: string, title: string
       <Icon name={icon} className="text-cyan-400 w-6 h-6" />
     </div>
     <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
-    <p className="text-slate-300 leading-relaxed">{/* Changed to slate-300 for higher contrast */}{desc}</p>
+    <p className="text-slate-300 leading-relaxed">{desc}</p>
   </div>
 );
 
-// --- MAIN PAGE ---
+// --- LWP Design, DH 2026 ---
 
 export default function EmergencyPlumberPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -67,18 +65,13 @@ export default function EmergencyPlumberPage() {
           from { opacity: 0; transform: translate3d(0, 40px, 0); }
           to { opacity: 1; transform: translate3d(0, 0, 0); }
         }
-        @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4); }
-          50% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
-        }
+        /* REMOVED BAD CSS: @keyframes pulse-glow was hurting performance */
         .animate-fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .delay-100 { animation-delay: 100ms; }
         .delay-200 { animation-delay: 200ms; }
         .delay-300 { animation-delay: 300ms; }
-        .animate-pulse-glow { animation: pulse-glow 2s infinite; }
       `}</style>
 
-      {/* NAV */}
       <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'py-4 bg-slate-950/90 backdrop-blur-md border-b border-slate-800' : 'py-6 bg-transparent'}`} aria-label="Main Navigation">
         <div className="container mx-auto px-6 flex justify-between items-center">
           <div className="flex items-center gap-2 font-bold text-2xl tracking-tighter">
@@ -94,14 +87,17 @@ export default function EmergencyPlumberPage() {
             <Link href="#" className="hover:text-white transition-colors">Reviews</Link>
           </div>
 
-          <a href="tel:555-0123" className="flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg shadow-rose-900/20 animate-pulse-glow" aria-label="Call 24/7 Emergency Service">
-            <Icon name="phone" className="w-4 h-4" />
-            <span>24/7 EMERGENCY</span>
-          </a>
+          {/* PERFORMANCE FIX: Using Tailwind animate-ping (GPU) instead of box-shadow animation */}
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-rose-500 rounded-full opacity-75 animate-ping group-hover:opacity-100"></div>
+            <a href="tel:555-0123" className="relative flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-white px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg shadow-rose-900/20" aria-label="Call 24/7 Emergency Service">
+              <Icon name="phone" className="w-4 h-4" />
+              <span>24/7 EMERGENCY</span>
+            </a>
+          </div>
         </div>
       </nav>
 
-      {/* HERO */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-cyan-500/20 rounded-full blur-[120px] -z-10 opacity-50 mix-blend-screen pointer-events-none" />
         
@@ -134,7 +130,6 @@ export default function EmergencyPlumberPage() {
         </div>
       </section>
 
-      {/* STATS */}
       <section className="border-y border-slate-800 bg-slate-900/50">
         <div className="container mx-auto px-6 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -153,7 +148,6 @@ export default function EmergencyPlumberPage() {
         </div>
       </section>
 
-      {/* SERVICES */}
       <section className="py-24">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
@@ -189,7 +183,6 @@ export default function EmergencyPlumberPage() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <section className="py-24 border-t border-slate-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-cyan-900/10" />
         <div className="container mx-auto px-6 relative text-center">
