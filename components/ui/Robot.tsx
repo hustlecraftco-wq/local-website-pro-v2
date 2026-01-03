@@ -2,14 +2,15 @@
 
 import { memo } from "react";
 import { motion } from "framer-motion";
-import Spline from '@splinetool/react-spline';
+import dynamic from "next/dynamic";
 
-const RobotScene = memo(function RobotScene() {
-  return (
-    <div className="w-full h-full pointer-events-auto md:pointer-events-auto">
-       <Spline scene="https://prod.spline.design/7u1sFSqNjkJO1NtH/scene.splinecode" />
+const RobotScene = dynamic(() => import('./RobotScene'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center">
+       <div className="w-10 h-10 border-4 border-slate-600 border-t-cyan-400 rounded-full animate-spin"></div>
     </div>
-  );
+  ),
 });
 
 export default function Robot({ showRobot, isLoaded }: { showRobot: boolean; isLoaded: boolean }) {
