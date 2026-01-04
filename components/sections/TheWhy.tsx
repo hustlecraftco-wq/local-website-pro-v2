@@ -66,7 +66,7 @@ export default function TheWhy() {
           <div className={`p-8 bg-white/5 border border-white/10 backdrop-blur-sm transition-all duration-700 delay-100 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
             <div className="flex justify-between items-start mb-6">
               <TrendingDown className="w-8 h-8 text-red-500" />
-              <span className="text-xs font-mono text-white/30 uppercase">Metric: Attrition</span>
+              <span className="text-xs font-mono text-white/50 uppercase">Metric: Attrition</span>
             </div>
             <div className="text-5xl font-black text-white mb-2">
               -7<span className="text-2xl text-white/50">%</span>
@@ -75,7 +75,7 @@ export default function TheWhy() {
             <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
               <div className="h-full bg-red-500 w-[70%]"></div>
             </div>
-            <p className="mt-4 text-xs text-white/40 leading-relaxed">
+            <p className="mt-4 text-xs text-white/60 leading-relaxed">
               A 1-second lag translates to $2.5M in lost sales for enterprise retailers. It is invisible money evaporating.
             </p>
           </div>
@@ -83,7 +83,7 @@ export default function TheWhy() {
           <div className={`p-8 bg-white/5 border border-white/10 backdrop-blur-sm transition-all duration-700 delay-200 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
             <div className="flex justify-between items-start mb-6">
               <MousePointer2 className="w-8 h-8 text-orange-400" />
-              <span className="text-xs font-mono text-white/30 uppercase">Metric: Bounce</span>
+              <span className="text-xs font-mono text-white/50 uppercase">Metric: Bounce</span>
             </div>
             <div className="text-5xl font-black text-white mb-2">
               +90<span className="text-2xl text-white/50">%</span>
@@ -92,7 +92,7 @@ export default function TheWhy() {
             <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
               <div className="h-full bg-orange-400 w-[90%]"></div>
             </div>
-            <p className="mt-4 text-xs text-white/40 leading-relaxed">
+            <p className="mt-4 text-xs text-white/60 leading-relaxed">
               The "3-second rule" is dead. Modern users judge credibility in 0.05 seconds. Slow sites are flagged as "unsafe."
             </p>
           </div>
@@ -100,7 +100,7 @@ export default function TheWhy() {
           <div className={`p-8 bg-kc-accent text-black border border-kc-accent transition-all duration-700 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
             <div className="flex justify-between items-start mb-6">
               <Zap className="w-8 h-8 text-black" />
-              <span className="text-xs font-mono text-black/60 uppercase font-bold">The Opportunity</span>
+              <span className="text-xs font-mono text-black/80 uppercase font-bold">The Opportunity</span>
             </div>
             <div className="text-5xl font-black text-black mb-2">
               3x
@@ -136,7 +136,7 @@ export default function TheWhy() {
                   Ad Cost Reduction
                 </span>
               </div>
-              <p className="text-xs text-white/40 pl-14">How we lower your CPC by up to 50% via Quality Score.</p>
+              <p className="text-xs text-white/60 pl-14">How we lower your CPC by up to 50% via Quality Score.</p>
             </button>
 
             <button 
@@ -151,7 +151,7 @@ export default function TheWhy() {
                   Programmatic SEO
                 </span>
               </div>
-              <p className="text-xs text-white/40 pl-14">Dominate local search with generated, high-speed landing pages.</p>
+              <p className="text-xs text-white/60 pl-14">Dominate local search with generated, high-speed landing pages.</p>
             </button>
 
             <button 
@@ -166,7 +166,7 @@ export default function TheWhy() {
                   The Modern Stack
                 </span>
               </div>
-              <p className="text-xs text-white/40 pl-14">Why we ditched WordPress for Next.js and Headless.</p>
+              <p className="text-xs text-white/60 pl-14">Why we ditched WordPress for Next.js and Headless.</p>
             </button>
           </div>
 

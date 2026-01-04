@@ -67,7 +67,7 @@ export default function Footer() {
                 LOCAL<span className="text-emerald-500/30">.</span>
               </h2>
             </Link>
-            <p className="text-zinc-500 text-lg mb-8 leading-relaxed">
+            <p className="text-zinc-400 text-lg mb-8 leading-relaxed">
               Stop renting websites. Own your digital asset.
               Custom-coded lead machines for Kansas City businesses.
             </p>
@@ -88,21 +88,21 @@ export default function Footer() {
               <Shield className="w-5 h-5 text-emerald-500" />
               <div>
                 <div className="text-white text-sm font-bold">SOC2 Ready</div>
-                <div className="text-zinc-500 text-xs">Enterprise Security</div>
+                <div className="text-zinc-400 text-xs">Enterprise Security</div>
               </div>
             </div>
             <div className="flex items-center gap-3 px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
               <Zap className="w-5 h-5 text-amber-500" />
               <div>
                 <div className="text-white text-sm font-bold">0.4s Load</div>
-                <div className="text-zinc-500 text-xs">Edge Delivery</div>
+                <div className="text-zinc-400 text-xs">Edge Delivery</div>
               </div>
             </div>
             <div className="flex items-center gap-3 px-4 py-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
               <Terminal className="w-5 h-5 text-blue-500" />
               <div>
                 <div className="text-white text-sm font-bold">Code Ownership</div>
-                <div className="text-zinc-500 text-xs">GitHub Handoff</div>
+                <div className="text-zinc-400 text-xs">GitHub Handoff</div>
               </div>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-zinc-500 hover:text-emerald-400 transition-colors text-sm"
+                    className="text-zinc-400 hover:text-emerald-400 transition-colors text-sm"
                   >
                     {link.name}
                   </Link>
@@ -136,7 +136,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-zinc-500 hover:text-emerald-400 transition-colors text-sm"
+                    className="text-zinc-400 hover:text-emerald-400 transition-colors text-sm"
                   >
                     {link.name}
                   </Link>
@@ -153,7 +153,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-zinc-500 hover:text-emerald-400 transition-colors text-sm"
+                    className="text-zinc-400 hover:text-emerald-400 transition-colors text-sm"
                   >
                     {link.name}
                   </Link>
@@ -170,7 +170,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-zinc-500 hover:text-emerald-400 transition-colors text-sm"
+                    className="text-zinc-400 hover:text-emerald-400 transition-colors text-sm"
                   >
                     {link.name}
                   </Link>
@@ -187,19 +187,19 @@ export default function Footer() {
           <div className="flex flex-wrap justify-center md:justify-start gap-6">
             <a
               href="mailto:hello@localwebsitepro.com"
-              className="flex items-center gap-2 text-zinc-500 hover:text-emerald-400 transition-colors text-sm"
+              className="flex items-center gap-2 text-zinc-400 hover:text-emerald-400 transition-colors text-sm"
             >
               <Mail className="w-4 h-4" />
               hello@localwebsitepro.com
             </a>
             <a
               href="tel:+18165551234"
-              className="flex items-center gap-2 text-zinc-500 hover:text-emerald-400 transition-colors text-sm"
+              className="flex items-center gap-2 text-zinc-400 hover:text-emerald-400 transition-colors text-sm"
             >
               <Phone className="w-4 h-4" />
               (816) 555-1234
             </a>
-            <span className="flex items-center gap-2 text-zinc-500 text-sm">
+            <span className="flex items-center gap-2 text-zinc-400 text-sm">
               <MapPin className="w-4 h-4" />
               Kansas City, MO
             </span>
@@ -211,7 +211,7 @@ export default function Footer() {
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-700 transition-all"
+              className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all"
               aria-label="GitHub"
             >
               <Github className="w-5 h-5" />
@@ -220,7 +220,7 @@ export default function Footer() {
               href="https://linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-700 transition-all"
+              className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all"
               aria-label="LinkedIn"
             >
               <Linkedin className="w-5 h-5" />
@@ -229,7 +229,7 @@ export default function Footer() {
               href="https://twitter.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-700 transition-all"
+              className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all"
               aria-label="Twitter"
             >
               <Twitter className="w-5 h-5" />
@@ -258,7 +258,7 @@ export default function Footer() {
         <div className="flex justify-center pt-12">
           <div className="inline-flex items-center gap-3 px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-full">
             <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">Built with</span>
-            <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
+            <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
               <span className="px-2 py-0.5 bg-black rounded">Next.js 15</span>
               <span className="px-2 py-0.5 bg-black rounded">Tailwind</span>
               <span className="px-2 py-0.5 bg-black rounded">Vercel Edge</span>

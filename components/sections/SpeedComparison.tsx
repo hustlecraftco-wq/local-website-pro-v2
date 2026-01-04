@@ -249,7 +249,7 @@ export default function SpeedComparison() {
             <p className="font-bold text-sm leading-relaxed mb-6 text-black/80">
               You own the code. No monthly "website rental" fees. It’s an engineered asset that builds equity.
             </p>
-            <div className="font-mono text-[10px] tracking-widest uppercase text-black/60 font-black">Status: Ownership</div>
+            <div className="font-mono text-[10px] tracking-widest uppercase text-black/80 font-black">Status: Ownership</div>
           </div>
         </div>
       </div>

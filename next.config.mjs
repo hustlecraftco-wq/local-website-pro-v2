@@ -9,6 +9,11 @@ const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
 
+  // MODERN BROWSER OPTIMIZATION: Help SWC avoid legacy polyfills
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+
   // 1. IP PROTECTION: Strictly disable source maps in production
   // This is the primary way to keep your 3D logic secret from "Inspect Element".
   productionBrowserSourceMaps: false,

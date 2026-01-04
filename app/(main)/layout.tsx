@@ -28,7 +28,7 @@ export const viewport: Viewport = {
   themeColor: "#050505",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // Removed maximumScale: 1 - it's bad for accessibility (users need to zoom)
 };
 
 // 3. SEO Tags

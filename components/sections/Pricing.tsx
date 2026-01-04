@@ -205,7 +205,7 @@ export default function ServicesAndPricing() {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all capitalize relative ${
-                  activeTab === tab ? "text-white" : "text-zinc-500 hover:text-zinc-300"
+                  activeTab === tab ? "text-white" : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 {activeTab === tab && (
@@ -317,7 +317,7 @@ export default function ServicesAndPricing() {
                 <div className="flex items-center gap-6">
                   <div>
                     <span className="block text-3xl font-black text-white">$997</span>
-                    <span className="text-zinc-500 text-xs uppercase tracking-wider">Per Month</span>
+                    <span className="text-zinc-400 text-xs uppercase tracking-wider">Per Month</span>
                   </div>
                   <button className="px-8 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold shadow-lg shadow-purple-900/40 transition-all flex items-center gap-2 group">
                     Start Hunting <Target className="w-4 h-4 group-hover:rotate-45 transition-transform" />
@@ -414,7 +414,7 @@ function PricingCard({ option }: { option: any }) {
         
         <div className="mb-8">
           <div className="text-4xl font-black text-white mb-1 tracking-tight">{option.price}</div>
-          <div className="text-xs text-zinc-500 uppercase tracking-wider font-bold">{option.period}</div>
+          <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold">{option.period}</div>
         </div>
 
         <button className={`w-full py-4 font-bold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-transparent text-white
