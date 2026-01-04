@@ -33,16 +33,19 @@ export function HoverTilt({
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return;
-    
-    const rect = ref.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    const percentX = (e.clientX - centerX) / (rect.width / 2);
-    const percentY = (e.clientY - centerY) / (rect.height / 2);
-    
-    x.set(percentX * intensity);
-    y.set(-percentY * intensity);
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    // Use requestAnimationFrame to avoid forced reflow
+    requestAnimationFrame(() => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const percentX = (clientX - centerX) / (rect.width / 2);
+      const percentY = (clientY - centerY) / (rect.height / 2);
+      x.set(percentX * intensity);
+      y.set(-percentY * intensity);
+    });
   };
 
   const handleMouseLeave = () => {
@@ -190,12 +193,17 @@ export function HoverMagnetic({
   const springY = useSpring(y, { stiffness: 150, damping: 15 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    x.set((e.clientX - centerX) * strength);
-    y.set((e.clientY - centerY) * strength);
+    const target = e.currentTarget;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    // Use requestAnimationFrame to avoid forced reflow
+    requestAnimationFrame(() => {
+      const rect = target.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      x.set((clientX - centerX) * strength);
+      y.set((clientY - centerY) * strength);
+    });
   };
 
   const handleMouseLeave = () => {
@@ -236,11 +244,16 @@ export function SpotlightCard({
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!divRef.current) return;
-    
-    const rect = divRef.current.getBoundingClientRect();
-    setPosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    // Use requestAnimationFrame to avoid forced reflow
+    requestAnimationFrame(() => {
+      if (!divRef.current) return;
+      const rect = divRef.current.getBoundingClientRect();
+      setPosition({
+        x: clientX - rect.left,
+        y: clientY - rect.top,
+      });
     });
   };
 

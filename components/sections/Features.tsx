@@ -43,15 +43,20 @@ function TiltCard({
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
+    // Use requestAnimationFrame to avoid forced reflow on every mouse move
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    requestAnimationFrame(() => {
+      if (!cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const x = (clientX - rect.left) / rect.width - 0.5;
+      const y = (clientY - rect.top) / rect.height - 0.5;
 
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-
-    mouseX.set(x);
-    mouseY.set(y);
-    spotlightX.set(((e.clientX - rect.left) / rect.width) * 100);
-    spotlightY.set(((e.clientY - rect.top) / rect.height) * 100);
+      mouseX.set(x);
+      mouseY.set(y);
+      spotlightX.set(((clientX - rect.left) / rect.width) * 100);
+      spotlightY.set(((clientY - rect.top) / rect.height) * 100);
+    });
   };
 
   const handleMouseLeave = () => {
