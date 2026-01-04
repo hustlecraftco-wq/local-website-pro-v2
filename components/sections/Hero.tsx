@@ -1,239 +1,57 @@
 "use client";
 
-import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { Zap, ArrowRight, Clock, Laptop } from "lucide-react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 
-// LAZY LOAD: Spline is ~12MB - only load on desktop after user interaction
+// LAZY LOAD: Spline is ~12MB - load immediately on desktop for hero experience
 const HeroBackground = dynamic(() => import("@/components/ui/HeroBackground"), {
   ssr: false,
-  loading: () => null,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+    </div>
+  ),
 });
 
 export default function Hero() {
-  const [speedTestActive, setSpeedTestActive] = useState(false);
-  const [speedTestDone, setSpeedTestDone] = useState(false);
-
-  // --- ANIMATION LOGIC ---
-
-  // 1. Competitor Animation (Slow)
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (latest) => latest.toFixed(1));
-  const competitorTextRef = useRef<HTMLParagraphElement>(null);
-
-  // 2. Asset Animation (Fast)
-  const assetCount = useMotionValue(0);
-  const assetRounded = useTransform(assetCount, (latest) => latest.toFixed(1));
-  const assetTextRef = useRef<HTMLParagraphElement>(null);
-
-  // Sync Competitor Text
-  useEffect(() => {
-    const unsubscribe = rounded.on("change", (latest) => {
-      if (competitorTextRef.current) {
-        competitorTextRef.current.textContent = latest + "s";
-      }
-    });
-    return () => unsubscribe();
-  }, [rounded]);
-
-  // Sync Asset Text
-  useEffect(() => {
-    const unsubscribe = assetRounded.on("change", (latest) => {
-      if (assetTextRef.current) {
-        assetTextRef.current.textContent = latest + "s";
-      }
-    });
-    return () => unsubscribe();
-  }, [assetRounded]);
-
-  const runSpeedTest = () => {
-    if (speedTestActive) return;
-    setSpeedTestActive(true);
-    setSpeedTestDone(false);
-
-    // Reset values
-    count.set(0);
-    assetCount.set(0);
-
-    // Animate Competitor (Slow: 3.2s over 2.5 seconds)
-    animate(count, 3.2, {
-      duration: 2.5,
-      ease: "linear",
-      onComplete: () => setSpeedTestDone(true)
-    });
-
-    // Animate Asset (Fast: 0.4s over 0.4 seconds)
-    animate(assetCount, 0.4, {
-      duration: 0.4,
-      ease: "circOut"
-    });
-  };
-
-  const resetSpeedTest = () => {
-    count.set(0);
-    assetCount.set(0);
-    setSpeedTestActive(false);
-    setSpeedTestDone(false);
-    if (competitorTextRef.current) competitorTextRef.current.textContent = "0.0s";
-    if (assetTextRef.current) assetTextRef.current.textContent = "0.0s";
-  };
-
-  // STRICT CONDITIONAL: Spline is ~12MB - only load on desktop after interaction
   const [isDesktop, setIsDesktop] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
-  const [splineLoaded, setSplineLoaded] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   useEffect(() => {
-    // Check desktop on mount
     const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
     checkDesktop();
     window.addEventListener('resize', checkDesktop);
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
+  // Load Spline after a brief delay to let critical content paint
   useEffect(() => {
-    // Load Spline only after user interaction (saves 12MB on initial load)
-    if (!isDesktop) return;
-
-    const handleInteraction = () => {
-      setHasInteracted(true);
-      window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
-    };
-
-    window.addEventListener('scroll', handleInteraction, { passive: true });
-    window.addEventListener('click', handleInteraction, { passive: true });
-    window.addEventListener('touchstart', handleInteraction, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
-    };
-  }, [isDesktop]);
-
-  // Delay Spline render slightly after interaction to let other assets settle
-  useEffect(() => {
-    if (!hasInteracted) return;
-    const timer = setTimeout(() => setSplineLoaded(true), 500);
+    const timer = setTimeout(() => setShouldLoad(true), 100);
     return () => clearTimeout(timer);
-  }, [hasInteracted]);
+  }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden border-b border-white/5 bg-kc-dark">
-      {/* Background - STRICT: Spline (~12MB) only loads on desktop after interaction */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Static gradient background shows immediately (good for LCP) */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-950/50 via-kc-dark to-kc-dark" />
+    <section className="relative h-screen w-full overflow-hidden bg-kc-dark">
+      {/* Gradient fallback for mobile and initial load */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/30 via-kc-dark to-kc-dark" />
 
-        {/* DESKTOP ONLY: Spline loads after user interaction */}
-        {isDesktop && splineLoaded && (
-          <div className="absolute inset-0 opacity-80 transition-opacity duration-1000">
-            <HeroBackground />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-kc-dark via-kc-dark/40 to-blue-900/10" />
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-20 text-center">
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-900/40 border border-blue-500/30 text-blue-400 text-[10px] md:text-xs font-black uppercase tracking-widest mb-6 shadow-[0_0_15px_rgba(59,130,246,0.2)] backdrop-blur-sm"
-        >
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-          </span>
-          Veteran Owned & Operated
-        </motion.div>
-        <br />
-
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 py-2 px-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 shadow-2xl"
-        >
-          <span className="w-2 h-2 rounded-full bg-kc-accent animate-pulse"></span>
-          <span className="text-white text-xs font-bold uppercase tracking-[0.2em]">KC's Fastest Hand-Coded Assets</span>
-        </motion.div>
-
-        {/* LCP CRITICAL: h1 must be visible immediately - no JS animation delay */}
-        <h1 className="text-5xl md:text-8xl font-black leading-[1.1] mb-6 tracking-tight text-white">
-          Stop Renting Sites.<br/>
-          Own Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-kc-success to-emerald-200">Lead Machine.</span>
-        </h1>
-
-        <p className="text-lg md:text-2xl text-kc-muted mb-12 max-w-3xl mx-auto leading-relaxed">
-          We build fast, custom-coded digital storefronts for KC Businesses and Professionals.
-          <span className="text-white font-semibold"> 0.4s Load Time. No Monthly Fees. 100% Ownership.</span>
-        </p>
-
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-5 justify-center mb-20">
-          <Link href="/contact" className="group relative px-8 py-4 bg-kc-accent rounded-full text-white font-bold text-lg shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2">
-            <span>Build My Asset</span>
-            <ArrowRight className="w-5 h-5"/>
-          </Link>
-          
-          {/* Swapped to "Demos" based on your strategy pivot */}
-          <Link href="#demos" className="px-8 py-4 glass-panel rounded-full text-white font-bold text-lg hover:bg-white/5 transition-all flex items-center justify-center gap-2 group">
-            <Laptop className="w-5 h-5 text-kc-muted group-hover:text-white transition-colors"/>
-            <span>See Live Demos</span>
-          </Link>
+      {/* Interactive Spline - DESKTOP: Full experience, MOBILE: Gradient only */}
+      {isDesktop && shouldLoad ? (
+        <div className="absolute inset-0">
+          <HeroBackground />
         </div>
+      ) : (
+        /* Mobile: Show a subtle animated gradient instead */
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-kc-dark to-emerald-900/10" />
+      )}
 
-        {/* Speed Test Widget */}
-        <div className="max-w-xl mx-auto min-h-[220px]">
-          {!speedTestActive ? (
-            <button onClick={runSpeedTest} className="group w-full md:w-auto glass-panel px-8 py-6 rounded-2xl flex items-center justify-center gap-4 mx-auto hover:border-kc-success/50 transition-all cursor-pointer">
-              <div className="p-3 bg-kc-success/10 rounded-full text-kc-success">
-                <Zap className="w-6 h-6" />
-              </div>
-              <div className="text-left">
-                <div className="text-sm text-kc-muted uppercase tracking-wider font-bold">Challenge Us</div>
-                <div className="text-white font-bold text-lg">Test Speed vs. Competitors</div>
-              </div>
-            </button>
-          ) : (
-            <div className="glass-panel p-8 rounded-3xl border-kc-success/30 relative overflow-hidden">
-              <div className="flex justify-between items-center relative z-10">
-                {/* Competitor Side */}
-                <div className="text-center w-1/2">
-                  <p className="text-[10px] uppercase tracking-widest text-kc-accent font-bold mb-2">Wordpress</p>
-                  <p ref={competitorTextRef} className="text-5xl font-mono font-black text-white">0.0s</p>
-                  <p className="text-xs text-kc-muted mt-2">Loading...</p>
-                </div>
-
-                <div className="h-12 w-px bg-white/10 mx-4"></div>
-
-                {/* Asset Side */}
-                <div className="text-center w-1/2">
-                  <p className="text-[10px] uppercase tracking-widest text-kc-success font-bold mb-2">Your Asset</p>
-                  <p ref={assetTextRef} className="text-5xl font-mono font-black text-kc-success">0.0s</p>
-                  <p className="text-xs text-kc-success/70 mt-2">Instant.</p>
-                </div>
-              </div>
-
-              {/* Result Message with Stat */}
-              {speedTestDone && (
-                <div className="mt-6 pt-4 border-t border-white/5 text-center animate-fade-in-up">
-                  <p className="text-white font-bold mb-1 text-lg">
-                    In that 2.8s gap, your customer left.
-                  </p>
-                  <p className="text-xs text-kc-muted mb-3 italic">
-                    "If their house is flooding, they won't wait. Would you?"
-                  </p>
-                  <button onClick={resetSpeedTest} className="text-xs text-kc-accent uppercase font-bold tracking-widest hover:text-white transition-colors">
-                    Reset Test
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+        <div className="flex flex-col items-center gap-2 text-white/50">
+          <span className="text-xs uppercase tracking-widest">Scroll</span>
+          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
+            <div className="w-1 h-3 bg-white/50 rounded-full animate-bounce" />
+          </div>
         </div>
       </div>
     </section>

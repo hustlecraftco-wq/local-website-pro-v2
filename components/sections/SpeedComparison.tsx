@@ -1,7 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Zap, Activity, Database, Cpu, HardHat, Terminal, ArrowRight, CheckCircle2, MessageSquare } from "lucide-react";
+import { Zap, Activity, Database, Cpu, HardHat, Terminal, ArrowRight, CheckCircle2, MessageSquare, Laptop } from "lucide-react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 // DYNAMIC IMPORT: Browser ignores this file until we ask for it
 const Robot = dynamic(() => import("@/components/ui/Robot"), {
@@ -79,7 +80,51 @@ export default function SpeedComparison() {
 
       {/* TEXT CONTENT */}
       <div className="max-w-6xl mx-auto relative z-10">
-        
+
+        {/* Hero Section - Moved from Hero.tsx */}
+        <div className="text-center mb-32 pt-8">
+          {/* Badges */}
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-white/60 text-xs font-bold uppercase tracking-widest">
+              <CheckCircle2 className="w-4 h-4 text-kc-accent" />
+              Veteran Owned
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-white/60 text-xs font-bold uppercase tracking-widest">
+              <Zap className="w-4 h-4 text-kc-accent" />
+              KC's Fastest Sites
+            </div>
+          </div>
+
+          {/* Main Headline */}
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tighter leading-[0.9] mb-6">
+            Stop Renting Sites.<br/>
+            <span className="text-kc-accent">Own Your Lead Machine.</span>
+          </h1>
+
+          {/* Subheadline */}
+          <p className="text-xl md:text-2xl text-kc-text max-w-3xl mx-auto mb-10 leading-relaxed">
+            Kansas City businesses deserve websites that <span className="text-white font-bold">generate leads</span>, not monthly bills. I build blazing-fast, AI-powered sites you actually own.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link
+              href="#contact"
+              className="group flex items-center gap-3 bg-kc-accent text-white font-black py-5 px-10 text-lg uppercase tracking-widest hover:brightness-110 transition-all shadow-[0_10px_40px_rgba(255,107,53,0.3)]"
+            >
+              Build My Asset
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link
+              href="/demos"
+              className="group flex items-center gap-3 border-2 border-white/20 text-white font-black py-5 px-10 text-lg uppercase tracking-widest hover:border-white/40 hover:bg-white/5 transition-all"
+            >
+              <Laptop className="w-5 h-5" />
+              See Live Demos
+            </Link>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20 items-end">
           <div>
