@@ -3,20 +3,27 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { Zap, ArrowRight, Clock, Laptop } from "lucide-react"; // Added Laptop for Demos icon if needed
+import { Zap, ArrowRight, Clock, Laptop } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// LAZY LOAD: Spline is ~12MB - only load on desktop after user interaction
+const HeroBackground = dynamic(() => import("@/components/ui/HeroBackground"), {
+  ssr: false,
+  loading: () => null,
+});
 
 export default function Hero() {
   const [speedTestActive, setSpeedTestActive] = useState(false);
   const [speedTestDone, setSpeedTestDone] = useState(false);
-  
+
   // --- ANIMATION LOGIC ---
-  
+
   // 1. Competitor Animation (Slow)
   const count = useMotionValue(0);
   const rounded = useTransform(count, (latest) => latest.toFixed(1));
   const competitorTextRef = useRef<HTMLParagraphElement>(null);
 
-  // 2. Asset Animation (Fast) - NEW
+  // 2. Asset Animation (Fast)
   const assetCount = useMotionValue(0);
   const assetRounded = useTransform(assetCount, (latest) => latest.toFixed(1));
   const assetTextRef = useRef<HTMLParagraphElement>(null);
@@ -31,7 +38,7 @@ export default function Hero() {
     return () => unsubscribe();
   }, [rounded]);
 
-  // Sync Asset Text - NEW
+  // Sync Asset Text
   useEffect(() => {
     const unsubscribe = assetRounded.on("change", (latest) => {
       if (assetTextRef.current) {
@@ -45,19 +52,19 @@ export default function Hero() {
     if (speedTestActive) return;
     setSpeedTestActive(true);
     setSpeedTestDone(false);
-    
+
     // Reset values
     count.set(0);
     assetCount.set(0);
-    
+
     // Animate Competitor (Slow: 3.2s over 2.5 seconds)
-    animate(count, 3.2, { 
-      duration: 2.5, 
+    animate(count, 3.2, {
+      duration: 2.5,
       ease: "linear",
       onComplete: () => setSpeedTestDone(true)
     });
 
-    // Animate Asset (Fast: 0.4s over 0.4 seconds) - NEW
+    // Animate Asset (Fast: 0.4s over 0.4 seconds)
     animate(assetCount, 0.4, {
       duration: 0.4,
       ease: "circOut"
@@ -73,37 +80,60 @@ export default function Hero() {
     if (assetTextRef.current) assetTextRef.current.textContent = "0.0s";
   };
 
-  // STRICT CONDITIONAL: Video tag literally doesn't exist on mobile (saves 11MB download)
-  const [isDesktop, setIsDesktop] = useState(false); // Default mobile to prevent hydration mismatch
-  const [videoLoaded, setVideoLoaded] = useState(false);
+  // STRICT CONDITIONAL: Spline is ~12MB - only load on desktop after interaction
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [splineLoaded, setSplineLoaded] = useState(false);
 
   useEffect(() => {
-    // Only render video on desktop (768px+) - mobile gets gradient only
+    // Check desktop on mount
     const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
     checkDesktop();
     window.addEventListener('resize', checkDesktop);
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
+  useEffect(() => {
+    // Load Spline only after user interaction (saves 12MB on initial load)
+    if (!isDesktop) return;
+
+    const handleInteraction = () => {
+      setHasInteracted(true);
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
+
+    window.addEventListener('scroll', handleInteraction, { passive: true });
+    window.addEventListener('click', handleInteraction, { passive: true });
+    window.addEventListener('touchstart', handleInteraction, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
+  }, [isDesktop]);
+
+  // Delay Spline render slightly after interaction to let other assets settle
+  useEffect(() => {
+    if (!hasInteracted) return;
+    const timer = setTimeout(() => setSplineLoaded(true), 500);
+    return () => clearTimeout(timer);
+  }, [hasInteracted]);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden border-b border-white/5 bg-kc-dark">
-      {/* Background - STRICT: Video tag is NULL on mobile, saving 11MB download */}
+      {/* Background - STRICT: Spline (~12MB) only loads on desktop after interaction */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Static gradient background shows immediately (good for LCP) */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-950/50 via-kc-dark to-kc-dark" />
 
-        {/* DESKTOP ONLY: Video tag doesn't exist in DOM on mobile */}
-        {isDesktop && (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            onCanPlayThrough={() => setVideoLoaded(true)}
-            className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-90' : 'opacity-0'}`}
-          >
-            <source src="/hero-bg.mp4" type="video/mp4" />
-          </video>
+        {/* DESKTOP ONLY: Spline loads after user interaction */}
+        {isDesktop && splineLoaded && (
+          <div className="absolute inset-0 opacity-80 transition-opacity duration-1000">
+            <HeroBackground />
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-kc-dark via-kc-dark/40 to-blue-900/10" />
       </div>
