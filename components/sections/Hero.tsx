@@ -73,36 +73,28 @@ export default function Hero() {
     if (assetTextRef.current) assetTextRef.current.textContent = "0.0s";
   };
 
+  // STRICT CONDITIONAL: Video tag literally doesn't exist on mobile (saves 11MB download)
+  const [isDesktop, setIsDesktop] = useState(false); // Default mobile to prevent hydration mismatch
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    // Defer video loading until after LCP for better mobile performance
-    // requestIdleCallback ensures we don't block the main thread
-    const loadVideo = () => {
-      setShowVideo(true);
-    };
-
-    // Wait for page to be idle, or fallback to 2s delay
-    if ('requestIdleCallback' in window) {
-      (window as typeof window & { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(loadVideo, { timeout: 2000 });
-    } else {
-      setTimeout(loadVideo, 1500);
-    }
+    // Only render video on desktop (768px+) - mobile gets gradient only
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden border-b border-white/5 bg-kc-dark">
-      {/* Background - Poster first strategy for LCP */}
+      {/* Background - STRICT: Video tag is NULL on mobile, saving 11MB download */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Static gradient background shows immediately (good for LCP) */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-950/50 via-kc-dark to-kc-dark" />
 
-        {/* Video fades in after page load */}
-        {showVideo && (
+        {/* DESKTOP ONLY: Video tag doesn't exist in DOM on mobile */}
+        {isDesktop && (
           <video
-            ref={videoRef}
             autoPlay
             muted
             loop

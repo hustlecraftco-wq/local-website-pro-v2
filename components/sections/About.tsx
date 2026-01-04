@@ -1,20 +1,35 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Code2, Database, Layout, Server, ShieldCheck } from "lucide-react";
 
 export default function About() {
+  // STRICT CONDITIONAL: Video tag doesn't exist on mobile (saves 11MB download)
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
   return (
     <section id="about" className="relative py-24 px-6 bg-[#080808] border-t border-white/5 overflow-hidden">
-      
-      {/* --- BACKGROUND VIDEO (F-18 Launch) --- */}
+
+      {/* --- BACKGROUND VIDEO (F-18 Launch) - DESKTOP ONLY --- */}
       <div className="absolute inset-0 z-0">
-        <video 
-          autoPlay muted loop playsInline 
-          className="w-full h-full object-cover opacity-90" // 90% Opacity + Full Color (No Grayscale)
-        >
-          {/* Make sure 'carrier-launch.mp4' is in your public folder */}
-          <source src="/carrier-launch.mp4" type="video/mp4" />
-        </video>
-        {/* Dark Gradient Overlay (To make text readable against full color video) */}
+        {/* DESKTOP ONLY: Video tag is NULL on mobile, saving 11MB */}
+        {isDesktop && (
+          <video
+            autoPlay muted loop playsInline
+            onCanPlayThrough={() => setVideoLoaded(true)}
+            className={`w-full h-full object-cover transition-opacity duration-700 ${videoLoaded ? 'opacity-90' : 'opacity-0'}`}
+          >
+            <source src="/carrier-launch.mp4" type="video/mp4" />
+          </video>
+        )}
+        {/* Dark Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#080808] via-[#080808]/70 to-[#080808]/30"></div>
       </div>
 

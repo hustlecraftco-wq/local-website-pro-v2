@@ -77,6 +77,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        {/* Preconnect to external origins for faster resource loading */}
+        <link rel="preconnect" href="https://www.transparenttextures.com" />
+        <link rel="dns-prefetch" href="https://www.transparenttextures.com" />
+      </head>
       <body className={`${inter.variable} ${playfair.variable} ${lora.variable} font-sans bg-kc-dark text-kc-text antialiased`}>
         <script
           type="application/ld+json"

@@ -10,10 +10,20 @@ const Robot = dynamic(() => import("@/components/ui/Robot"), {
 
 export default function SpeedComparison() {
   const [startAnim, setStartAnim] = useState(false);
-  
+
   // -- LAZY LOAD LOGIC --
   const containerRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false); // STRICT: No 32MB video on mobile
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    // Check desktop for video conditional
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -50,18 +60,19 @@ export default function SpeedComparison() {
         <Robot showRobot={true} isLoaded={true} />
       )}
 
-      {/* VIDEO BACKGROUND */}
+      {/* VIDEO BACKGROUND - DESKTOP ONLY (saves 32MB on mobile) */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        {isInView && (
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover opacity-60" 
-            >
-              <source src="/liquid-clock.mp4" type="video/mp4" />
-            </video>
+        {isInView && isDesktop && (
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            onCanPlayThrough={() => setVideoLoaded(true)}
+            className={`w-full h-full object-cover transition-opacity duration-700 ${videoLoaded ? 'opacity-60' : 'opacity-0'}`}
+          >
+            <source src="/liquid-clock.mp4" type="video/mp4" />
+          </video>
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-kc-dark/40 via-kc-dark/90 to-kc-dark/40" />
       </div>
