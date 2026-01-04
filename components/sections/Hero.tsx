@@ -131,21 +131,16 @@ export default function Hero() {
           <span className="text-white text-xs font-bold uppercase tracking-[0.2em]">KC's Fastest Hand-Coded Assets</span>
         </motion.div>
 
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="text-5xl md:text-8xl font-black leading-[1.1] mb-6 tracking-tight text-white"
-        >
+        {/* LCP CRITICAL: h1 must be visible immediately - no JS animation delay */}
+        <h1 className="text-5xl md:text-8xl font-black leading-[1.1] mb-6 tracking-tight text-white">
           Stop Renting Sites.<br/>
           Own Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-kc-success to-emerald-200">Lead Machine.</span>
-        </motion.h1>
+        </h1>
 
-        <motion.p 
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-          className="text-lg md:text-2xl text-kc-muted mb-12 max-w-3xl mx-auto leading-relaxed"
-        >
-          We build fast, custom-coded digital storefronts for KC Businesses and Professionals. 
+        <p className="text-lg md:text-2xl text-kc-muted mb-12 max-w-3xl mx-auto leading-relaxed">
+          We build fast, custom-coded digital storefronts for KC Businesses and Professionals.
           <span className="text-white font-semibold"> 0.4s Load Time. No Monthly Fees. 100% Ownership.</span>
-        </motion.p>
+        </p>
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-5 justify-center mb-20">
